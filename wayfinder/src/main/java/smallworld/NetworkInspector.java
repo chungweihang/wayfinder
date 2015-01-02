@@ -18,7 +18,7 @@ public class NetworkInspector {
 		Query q = new Query("neo4j/" + dataset);
 		QueryCircles qc = new QueryCircles(q);
 		
-		Multiset<Label> circleSizes = HashMultiset.create();
+		Multiset<String> circleSizes = HashMultiset.create();
 		Multiset<Integer> peopleSizes = HashMultiset.create();
 		
 		Long[] nodes = q.allNodes();
@@ -26,10 +26,10 @@ public class NetworkInspector {
 		
 		for (Long nid : nodes) {
 			int circleCount = 0;
-			Iterator<Label> circles = qc.getCircles(nid).iterator();
+			Iterator<String> circles = qc.getCircles(nid).iterator();
 			while (circles.hasNext()) {
 				circleCount++;
-				Label circle = circles.next();
+				String circle = circles.next();
 				circleSizes.add(circle);
 			}
 			
@@ -37,7 +37,7 @@ public class NetworkInspector {
 		}
 		
 		Multiset<Integer> dists = HashMultiset.create();
-		for (Label circle : circleSizes.elementSet()) {
+		for (String circle : circleSizes.elementSet()) {
 			dists.add(circleSizes.count(circle));
 		}
 		

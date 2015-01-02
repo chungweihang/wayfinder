@@ -198,10 +198,9 @@ public class ConcurrentMain implements NavigationCompleteListener {
 		final int NUMBER_OF_NODES_VISITED = 4;
 		
 		pairsVisited = new HashSet<Integer>();
-		BufferedReader reader = null;
+		//BufferedReader reader = null;
 		
-		try {
-			reader = new BufferedReader(new FileReader(file));
+		try (BufferedReader reader = new BufferedReader(new FileReader(file))) {
 			for (String line = reader.readLine(); line != null; line = reader.readLine()) {
 				if (line.trim().length() > 0) {
 					String[] tokens = line.split(",");
@@ -219,9 +218,7 @@ public class ConcurrentMain implements NavigationCompleteListener {
 		} catch (IOException e) {
 			logger.log(Level.SEVERE, "Error reading log file: " + file);
 			e.printStackTrace();
-		} finally {
-			if (null != reader) try { reader.close(); } catch (IOException ignored) {}
-		}
+		} 
 		
 		System.out.println("[ConcurrentMain] number of pairs exists in log: " + pairsVisited.size());
 	}

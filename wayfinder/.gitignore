@@ -6,4 +6,6 @@ target/**
 .DS_Store
 *~
 *.class
+*.log
 /target/
+/neo4j/

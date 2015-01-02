@@ -51,8 +51,8 @@ public class FeaturesCirclesRelationships {
 			Node n1 = q.getNode(nodeIds.get(i));
 
 			// get all cirlces n1 belongs to
-			Set<Label> circles = new HashSet<>();
-			for (Iterator<Label> iterator = qc.getCircles(n1.getId()).iterator(); iterator.hasNext(); ) {
+			Set<String> circles = new HashSet<>();
+			for (Iterator<String> iterator = qc.getCircles(n1.getId()).iterator(); iterator.hasNext(); ) {
 				circles.add(iterator.next());
 			}
 			
@@ -69,8 +69,8 @@ public class FeaturesCirclesRelationships {
 						count++;
 				}
 				
-				for (Iterator<Label> iterator = qc.getCircles(n2.getId()).iterator(); iterator.hasNext(); ) {
-					Label circle = iterator.next();
+				for (Iterator<String> iterator = qc.getCircles(n2.getId()).iterator(); iterator.hasNext(); ) {
+					String circle = iterator.next();
 					if (circles.contains(circle)) {
 						if (!circleResults.containsKey(count)) circleResults.put(count, 1);
 						else circleResults.put(count, circleResults.get(count) + 1);

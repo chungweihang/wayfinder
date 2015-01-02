@@ -23,7 +23,7 @@ public class QueryCircles {
 		this(new Query(path));
 	}
 	
-	public Iterable<Label> getCircles(long ego) {
+	public Iterable<String> getCircles(long ego) {
 		return getCircles(query.getNode(ego));
 	}
 	
@@ -47,18 +47,21 @@ public class QueryCircles {
 		return nodes;
 	}
 	
-	public static Iterable<Label> getCircles(Node n) {
-		//return n.getPropertyKeys();
+	public static Iterable<String> getCircles(Node n) {
+		return n.getPropertyKeys();
+	}
+	
+	public static Iterable<Label> getCircleLabels(Node n) {
 		return n.getLabels();
 	}
 	
-	public Long getMinCommonCircle(Node m, Node n) {
-		Set<Label> circles = getCommonCircles(m, n);
+	public static int getMinCommonCircle(Node m, Node n) {
+		Set<String> circles = getCommonCircles(m, n);
 		
-		Long min = Long.MAX_VALUE;
+		int min = Integer.MAX_VALUE;
 		
-		for (Label circle : circles) {
-			Long size = sizeOfCircle(circle.name());
+		for (String circle : circles) {
+			int size = (int) n.getProperty(circle);
 			if (min > size) {
 				min = size;
 			}
@@ -67,13 +70,13 @@ public class QueryCircles {
 		return min;
 	}
 	
-	public Long getMaxCommonCircle(Node m, Node n) {
-		Set<Label> circles = getCommonCircles(m, n);
+	public static int getMaxCommonCircle(Node m, Node n) {
+		Set<String> circles = getCommonCircles(m, n);
 		
-		Long max = 0l;
+		int max = 0;
 		
-		for (Label circle : circles) {
-			Long size = sizeOfCircle(circle.name());
+		for (String circle : circles) {
+			int size = (int) n.getProperty(circle);
 			if (max < size) {
 				max = size;
 			}
@@ -82,11 +85,11 @@ public class QueryCircles {
 		return max;
 	}
 	
-	public static Set<Label> getCommonCircles(Node m, Node n) {
-		Set<Label> commons = new HashSet<Label>();
-		for (Iterator<Label> circles = getCircles(m).iterator(); circles.hasNext(); ) {
-			Label circle = circles.next();
-			if (n.hasLabel(circle)) {
+	public static Set<String> getCommonCircles(Node m, Node n) {
+		Set<String> commons = new HashSet<>();
+		for (Iterator<String> circles = getCircles(m).iterator(); circles.hasNext(); ) {
+			String circle = circles.next();
+			if (n.hasProperty(circle)) {
 				commons.add(circle);
 			}
 		}

@@ -52,8 +52,8 @@ public class QueryPath {
 			if (previous != null) {
 				System.out.println("** circles **");
 				
-				for (Iterator<Label> circles = qc.getCircles(n.getId()).iterator(); circles.hasNext(); ) {
-					System.out.println(circles.next().name());
+				for (Iterator<String> circles = qc.getCircles(n.getId()).iterator(); circles.hasNext(); ) {
+					System.out.println(circles.next());
 				}
 			}
 			
