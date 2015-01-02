@@ -22,10 +22,10 @@ public class MSPaperAuthor {
 	
 	public static Multimap<String, Long> circleAuthorMap = HashMultimap.create();
 	
-	public int paperId;
-	public long authorId;
-	public String name;
-	public String affiliation;
+	private int paperId;
+	private long authorId;
+	private String name;
+	private String affiliation;
 	
 	public MSPaperAuthor(int paperId, long authorId, String name, String affiliation) {
 		this.paperId = paperId;
@@ -34,10 +34,26 @@ public class MSPaperAuthor {
 		this.affiliation = affiliation;
 	}
 	
+	public int getPaperId() {
+		return paperId;
+	}
+
+	public String getName() {
+		return name;
+	}
+
+	public String getAffiliation() {
+		return affiliation;
+	}
+
+	public long getAuthorId() {
+		return authorId;
+	}
+
 	public String toString() {
 		return new StringBuilder("[MSPaperAuthor] ")
-			.append(paperId).append(" | ").append(authorId).append(" | ")
-			.append(name).append(" | ").append(affiliation).toString();
+			.append(paperId).append(" | ").append(getAuthorId()).append(" | ")
+			.append(name).append(" | ").append(getAffiliation()).toString();
 	}
 	
 	public static Table<Integer, Long, MSPaperAuthor> load(String filename, Map<Integer, MSPaper> papers, 
@@ -53,23 +69,23 @@ public class MSPaperAuthor {
 					MSPaperAuthor author = new MSPaperAuthor(
 							Integer.parseInt(record.get(PAPER_ID)), Long.parseLong(record.get(AUTHOR_ID)), 
 							record.get(NAME), record.get(AFFILIATION));
-					table.put(author.paperId, author.authorId, author);
+					table.put(author.paperId, author.getAuthorId(), author);
 					
 					// fill in circle information
 					MSPaper paper = papers.get(author.paperId);
 					if (paper == null) {
 						System.err.println("skipping circle for paper: " + author.paperId);
 					} else {
-						MSVenue venue = journals.get(paper.journalId);
+						MSVenue venue = journals.get(paper.getJournalId());
 						if (venue == null) {
-							venue = conferences.get(paper.conferenceId);
+							venue = conferences.get(paper.getConferenceId());
 						}
-						if (venue != null && venue.fullName.length() > 0) {
-							circleAuthorMap.put(venue.fullName, author.authorId);
-							circleAuthorMap.put(venue.fullName + " " + paper.year, author.authorId);
+						if (venue != null && venue.getFullName().length() > 0) {
+							circleAuthorMap.put(venue.getFullName(), author.getAuthorId());
+							circleAuthorMap.put(venue.getFullName() + " " + paper.getYear(), author.getAuthorId());
 						}
 					}
-					circleAuthorMap.put(author.affiliation, author.authorId);
+					circleAuthorMap.put(author.getAffiliation(), author.getAuthorId());
 				} catch (NumberFormatException e) {
 					System.err.println("skipping: " + record);
 				}

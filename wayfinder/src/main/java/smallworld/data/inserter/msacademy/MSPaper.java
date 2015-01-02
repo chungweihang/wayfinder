@@ -18,12 +18,12 @@ public class MSPaper {
 	private static int JOURNAL_ID = 4;
 	private static int KEYWORD = 5;
 	
-	public int id;
-	public String title;
-	public String year;
-	public int conferenceId;
-	public int journalId;
-	public String keyword;
+	private int id;
+	private String title;
+	private String year;
+	private int conferenceId;
+	private int journalId;
+	private String keyword;
 	
 	public MSPaper(int id, String title, String year, int conferenceId, int journalId, String keyword) {
 		this.id = id;
@@ -34,6 +34,30 @@ public class MSPaper {
 		this.keyword = keyword;
 	}
 	
+	public int getId() {
+		return id;
+	}
+
+	public String getTitle() {
+		return title;
+	}
+
+	public String getYear() {
+		return year;
+	}
+
+	public int getConferenceId() {
+		return conferenceId;
+	}
+
+	public int getJournalId() {
+		return journalId;
+	}
+
+	public String getKeyword() {
+		return keyword;
+	}
+
 	public String toString() {
 		return new StringBuilder("[MSPaper] ").append(id).append(" | ").append(title).append(" | ").append(year)
 				.append(" | ").append(conferenceId).append(" | ").append(journalId).append(" | ").append(keyword).toString();

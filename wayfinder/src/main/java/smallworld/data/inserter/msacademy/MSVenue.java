@@ -20,11 +20,11 @@ public class MSVenue {
 		JOURNAL, CONFERENCE
 	}
 		
-	public int id;
-	public String shortName;
-	public String fullName;
-	public String url;
-	public Type type;
+	private int id;
+	private String shortName;
+	private String fullName;
+	private String url;
+	private Type type;
 	
 	public MSVenue(int id, String shortName, String fullName, String url, Type type) {
 		this.id = id;
@@ -34,9 +34,29 @@ public class MSVenue {
 		this.type = type;
 	}
 	
+	public String getFullName() {
+		return fullName;
+	}
+
+	public int getId() {
+		return id;
+	}
+
+	public String getShortName() {
+		return shortName;
+	}
+
+	public String getUrl() {
+		return url;
+	}
+
+	public Type getType() {
+		return type;
+	}
+
 	public String toString() {
 		return new StringBuilder("[MSVenue] ").append(id).append(" | ")
-				.append(shortName).append(" | ").append(fullName).append(" | ").append(url)
+				.append(shortName).append(" | ").append(getFullName()).append(" | ").append(url)
 				.append(" | ").append(type.name()).toString();
 	}
 

@@ -15,9 +15,9 @@ public class MSAuthor {
 	private static int NAME = 1;
 	private static int AFFILIATION = 2;
 	
-	public long id;
-	public String name;
-	public String affiliation;
+	private long id;
+	private String name;
+	private String affiliation;
 	
 	public MSAuthor(long id, String name, String affiliation) {
 		this.id = id;
@@ -25,6 +25,19 @@ public class MSAuthor {
 		this.affiliation = affiliation;
 	}
 	
+	public long getId() {
+		return id;
+	}
+
+	public String getName() {
+		return name;
+	}
+
+
+	public String getAffiliation() {
+		return affiliation;
+	}
+
 	public String toString() {
 		return new StringBuilder("[MSAuthor] ").append(id).append(" | ").append(name).append(" | ").append(affiliation).toString();
 	}

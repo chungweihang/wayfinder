@@ -78,9 +78,9 @@ public class MSAcademyBatchInserter {
         	//System.out.println(++counter + "...");
         
         	MSPaper paper = paperMap.get(paperId);
-        	MSVenue venue = conferenceMap.get(paper.conferenceId);
+        	MSVenue venue = conferenceMap.get(paper.getConferenceId());
     		if (venue == null) {
-    			venue = journalMap.get(paper.journalId);
+    			venue = journalMap.get(paper.getJournalId());
     		}
     				
     		/*
@@ -101,18 +101,18 @@ public class MSAcademyBatchInserter {
         		MSPaperAuthor author = authors.get(i);
         		this.createAuthor(author);
         		// set "venue" and "venue-year" as circles
-        		if (venue != null && venue.fullName.length() > 0) {
-        			inserter.setNodeProperty(author.authorId, venue.fullName, MSPaperAuthor.circleAuthorMap.get(venue.fullName).size());
-        			inserter.setNodeProperty(author.authorId, venue.fullName + " " + paper.year, MSPaperAuthor.circleAuthorMap.get(venue.fullName + " " + paper.year).size());
+        		if (venue != null && venue.getFullName().length() > 0) {
+        			inserter.setNodeProperty(author.getAuthorId(), venue.getFullName(), MSPaperAuthor.circleAuthorMap.get(venue.getFullName()).size());
+        			inserter.setNodeProperty(author.getAuthorId(), venue.getFullName() + " " + paper.getYear(), MSPaperAuthor.circleAuthorMap.get(venue.getFullName() + " " + paper.getYear()).size());
         		} 
         		for (int j = i+1; j < authors.size(); j++) {
         			MSPaperAuthor coauthor = authors.get(j);
         			this.createAuthor(coauthor);
         			this.createCoauthorship(author, coauthor);
         			// set "venue" and "venue-year" as circles
-        			if (venue != null && venue.fullName.length() > 0) {
-        				inserter.setNodeProperty(coauthor.authorId, venue.fullName, MSPaperAuthor.circleAuthorMap.get(venue.fullName).size());
-            			inserter.setNodeProperty(coauthor.authorId, venue.fullName + " " + paper.year, MSPaperAuthor.circleAuthorMap.get(venue.fullName + " " + paper.year).size());
+        			if (venue != null && venue.getFullName().length() > 0) {
+        				inserter.setNodeProperty(coauthor.getAuthorId(), venue.getFullName(), MSPaperAuthor.circleAuthorMap.get(venue.getFullName()).size());
+            			inserter.setNodeProperty(coauthor.getAuthorId(), venue.getFullName() + " " + paper.getYear(), MSPaperAuthor.circleAuthorMap.get(venue.getFullName() + " " + paper.getYear()).size());
             		}
         		}
         	}
@@ -126,22 +126,22 @@ public class MSAcademyBatchInserter {
     }
 	
 	private void createCoauthorship(MSPaperAuthor author, MSPaperAuthor coauthor) {
-		if (edges.containsEntry(author.authorId, coauthor.authorId) || edges.containsEntry(coauthor.authorId, author.authorId)) 
+		if (edges.containsEntry(author.getAuthorId(), coauthor.getAuthorId()) || edges.containsEntry(coauthor.getAuthorId(), author.getAuthorId())) 
 			return;
 		
-		inserter.createRelationship(author.authorId, coauthor.authorId, RelationshipTypes.COAUTHOR.type(), null);
-		edges.put(author.authorId, coauthor.authorId);
+		inserter.createRelationship(author.getAuthorId(), coauthor.getAuthorId(), RelationshipTypes.COAUTHOR.type(), null);
+		edges.put(author.getAuthorId(), coauthor.getAuthorId());
 		edgeCount++;
 	}
 	
 	// Put affiliation as circles
 	private void createAuthor(MSPaperAuthor author) {
-		if (inserter.nodeExists(author.authorId)) return;
+		if (inserter.nodeExists(author.getAuthorId())) return;
 		Map<String, Object> properties = new HashMap<String, Object>();
 		//properties.put("name", author.name);
 		//properties.put("affiliation", author.affiliation);
-		properties.put(author.affiliation, MSPaperAuthor.circleAuthorMap.get(author.affiliation).size());
-		inserter.createNode(author.authorId, properties);
+		properties.put(author.getAffiliation(), MSPaperAuthor.circleAuthorMap.get(author.getAffiliation()).size());
+		inserter.createNode(author.getAuthorId(), properties);
 		authorCount++;
 	}
 	
