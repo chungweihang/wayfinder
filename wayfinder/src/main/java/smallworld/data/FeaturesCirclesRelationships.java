@@ -13,7 +13,6 @@ import java.util.Properties;
 import java.util.Random;
 import java.util.Set;
 
-import org.neo4j.graphdb.Label;
 import org.neo4j.graphdb.Node;
 import org.neo4j.graphdb.RelationshipType;
 

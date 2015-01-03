@@ -4,13 +4,11 @@ import java.io.FileNotFoundException;
 import java.io.PrintWriter;
 import java.util.Iterator;
 
-import org.neo4j.graphdb.Label;
+import smallworld.data.query.Query;
+import smallworld.data.query.QueryCircles;
 
 import com.google.common.collect.HashMultiset;
 import com.google.common.collect.Multiset;
-
-import smallworld.data.query.Query;
-import smallworld.data.query.QueryCircles;
 
 public class NetworkInspector {
 

@@ -5,7 +5,6 @@ import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import java.util.StringTokenizer;
 import java.util.Vector;
@@ -52,7 +51,7 @@ public class LibSVMUtils {
 	
 	public static double[] predictProbabilities(svm_model model, svm_node[] x) {
 		double[] probabilities = new double[2];
-		double label = svm.svm_predict_probability(model, x, probabilities);
+		/*double label = */svm.svm_predict_probability(model, x, probabilities);
 		//return label;
 		return probabilities;
 	}

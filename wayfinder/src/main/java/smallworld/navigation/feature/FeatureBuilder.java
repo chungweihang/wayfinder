@@ -8,7 +8,6 @@ import org.neo4j.graphdb.Node;
 import org.neo4j.graphdb.Path;
 import org.neo4j.graphdb.RelationshipType;
 
-import smallworld.Constants;
 import smallworld.data.query.Query;
 import smallworld.data.query.QueryCircles;
 import weka.core.Attribute;

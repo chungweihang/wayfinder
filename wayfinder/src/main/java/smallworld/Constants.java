@@ -3,7 +3,6 @@ package smallworld;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.Properties;
-import java.util.logging.Logger;
 
 public class Constants {
 
@@ -17,11 +16,14 @@ public class Constants {
 	// Because this is a random navigation, it may go infinite deep.
 	// Return null when number of nodes explored exceeds a limit.
 	public static int LIMIT_OF_NODES_EXPLORED = 1000;
+	// The path to the Neo4J database
+	// Should be set in ConcurrentMain
+	public static String NEO4J_PATH = "";
 			
 	static {
 		try {
 			Properties prop = new Properties();
-	        String propFileName = "config.properties";
+	        String propFileName = "resources/config.properties";
 	        InputStream inputStream = Constants.class.getClassLoader().getResourceAsStream(propFileName);
 	        if (inputStream != null) {
 	        	prop.load(inputStream);

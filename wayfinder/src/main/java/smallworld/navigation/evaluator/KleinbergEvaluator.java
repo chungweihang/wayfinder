@@ -4,16 +4,13 @@ import java.util.Iterator;
 import java.util.Set;
 
 import org.neo4j.graphdb.Direction;
+import org.neo4j.graphdb.Label;
 import org.neo4j.graphdb.Node;
 import org.neo4j.graphdb.Path;
 import org.neo4j.graphdb.Relationship;
 import org.neo4j.graphdb.RelationshipType;
-import org.neo4j.kernel.Traversal;
 
-import smallworld.data.RelationshipTypes;
-import smallworld.data.query.Query;
 import smallworld.data.query.QueryCircles;
-import smallworld.navigation.PrioritizedDFSNavigation;
 
 public class KleinbergEvaluator implements Evaluator<Integer> {
 	
@@ -46,7 +43,8 @@ public class KleinbergEvaluator implements Evaluator<Integer> {
 		// Node previous = path.lastRelationship().getOtherNode(current);
 		
 		//Set<String> previousCommonCircles = QueryCircles.getCommonCircles(previous, target);
-		Set<String> currentCommonCircles = QueryCircles.getCommonCircles(end, target);
+		//Set<String> currentCommonCircles = QueryCircles.getCommonCircles(end, target);
+		Set<Label> currentCommonCircles = QueryCircles.getInstance().getCommonCircleLabels(end, target);
 		
 		/*
 		if (previousCommonCircles.size() >= 0) { // previous is in target's circles
@@ -72,12 +70,13 @@ public class KleinbergEvaluator implements Evaluator<Integer> {
 	
 	}
 
+	/*
 	public static void main(String[] args) {
 		Query q = new Query("neo4j/simple");
 		
 		PrioritizedDFSNavigation nav = 
 				new PrioritizedDFSNavigation(
-						Traversal.pathExpanderForTypes(
+						PathExpanders.forTypeAndDirection(
 								RelationshipTypes.FRIEND.type(), 
 								Direction.BOTH), 
 							new KleinbergEvaluator(RelationshipTypes.FRIEND.type(), Direction.BOTH));
@@ -89,4 +88,5 @@ public class KleinbergEvaluator implements Evaluator<Integer> {
 		System.out.println(p);
 		q.shutdown();
 	}
+	*/
 }

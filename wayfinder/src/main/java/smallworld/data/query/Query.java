@@ -14,17 +14,28 @@ import org.neo4j.cypher.javacompat.ExecutionEngine;
 import org.neo4j.cypher.javacompat.ExecutionResult;
 import org.neo4j.graphdb.Direction;
 import org.neo4j.graphdb.GraphDatabaseService;
+import org.neo4j.graphdb.Label;
 import org.neo4j.graphdb.Node;
 import org.neo4j.graphdb.Relationship;
 import org.neo4j.graphdb.RelationshipType;
 import org.neo4j.graphdb.factory.GraphDatabaseFactory;
 
+import com.google.common.collect.Lists;
+
+import smallworld.Constants;
 import smallworld.data.RelationshipTypes;
 
 public class Query {
 	
 	private GraphDatabaseService db;
 	private ExecutionEngine engine;
+	
+	private static Query INSTANCE = null;
+	
+	public static synchronized Query getInstance() {
+		if (INSTANCE == null) INSTANCE = new Query(Constants.NEO4J_PATH);
+		return INSTANCE;
+	}
 	
 	public Query(String path) {
 		//db = new EmbeddedGraphDatabase(path);
@@ -336,7 +347,7 @@ public class Query {
 	public Long[] allNodes() {
 		ExecutionResult result = cypherQuery("START n = node(*) RETURN ID(n) as id ORDER BY id;");
 		
-		List<Object> list = this.cypherQueryResult(result, "id");
+		List<Object> list = cypherQueryResult(result, "id");
 
 		Long[] ids = new Long[list.size()];
 		for (int i = 0; i < list.size(); i++) {
@@ -420,6 +431,13 @@ public class Query {
 		}
 		
 		return count;
+	}
+	
+	private static final Label[] EMPTY_LABEL_ARRAY = new Label[0]; 
+	public static Label[] addLabel(Iterable<Label> currentLabels, Label newLabel) {
+		List<Label> labels = Lists.newArrayList(currentLabels);
+		labels.add(newLabel);
+		return labels.toArray(EMPTY_LABEL_ARRAY);
 	}
 	
 	/**

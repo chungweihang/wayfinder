@@ -12,6 +12,7 @@ import org.neo4j.unsafe.batchinsert.BatchInserter;
 import org.neo4j.unsafe.batchinsert.BatchInserters;
 
 import smallworld.data.RelationshipTypes;
+import smallworld.data.query.Query;
 
 public class SimpleGraphBatchInsert {
 
@@ -49,31 +50,37 @@ public class SimpleGraphBatchInsert {
 		inserter.createRelationship(6, 7, RelationshipTypes.FRIEND.type(), null);
 		
 		// circle1
-		inserter.setNodeProperty(1, "circle1", "");
-		inserter.setNodeProperty(2, "circle1", "");
-		inserter.setNodeProperty(3, "circle1", "");
-		inserter.setNodeProperty(4, "circle1", "");
+		/*
+		inserter.setNodeProperty(1, "circle1", 4);
+		inserter.setNodeProperty(2, "circle1", 4);
+		inserter.setNodeProperty(3, "circle1", 4);
+		inserter.setNodeProperty(4, "circle1", 4);
+		*/
 		Label circle1 = DynamicLabel.label("circle1");
-		inserter.setNodeLabels(1, circle1);
-		inserter.setNodeLabels(2, circle1);
-		inserter.setNodeLabels(3, circle1);
-		inserter.setNodeLabels(4, circle1);
+		inserter.setNodeLabels(1, Query.addLabel(inserter.getNodeLabels(1), circle1));
+		inserter.setNodeLabels(2, Query.addLabel(inserter.getNodeLabels(2), circle1));
+		inserter.setNodeLabels(3, Query.addLabel(inserter.getNodeLabels(3), circle1));
+		inserter.setNodeLabels(4, Query.addLabel(inserter.getNodeLabels(4), circle1));
 		
 		// circle2
-		inserter.setNodeProperty(4, "circle2", "");
-		inserter.setNodeProperty(5, "circle2", "");
+		/*
+		inserter.setNodeProperty(4, "circle2", 2);
+		inserter.setNodeProperty(5, "circle2", 2);
+		*/
 		Label circle2 = DynamicLabel.label("circle2");
-		inserter.setNodeLabels(4, circle2);
-		inserter.setNodeLabels(5, circle2);
+		inserter.setNodeLabels(4, Query.addLabel(inserter.getNodeLabels(4), circle2));
+		inserter.setNodeLabels(5, Query.addLabel(inserter.getNodeLabels(5), circle2));
 		
 		// circle3
-		inserter.setNodeProperty(5, "circle3", "");
-		inserter.setNodeProperty(6, "circle3", "");
-		inserter.setNodeProperty(7, "circle3", "");
+		/*
+		inserter.setNodeProperty(5, "circle3", 3);
+		inserter.setNodeProperty(6, "circle3", 3);
+		inserter.setNodeProperty(7, "circle3", 3);
+		*/
 		Label circle3 = DynamicLabel.label("circle3");
-		inserter.setNodeLabels(5, circle3);
-		inserter.setNodeLabels(6, circle3);
-		inserter.setNodeLabels(7, circle3);
+		inserter.setNodeLabels(5, Query.addLabel(inserter.getNodeLabels(5), circle3));
+		inserter.setNodeLabels(6, Query.addLabel(inserter.getNodeLabels(6), circle3));
+		inserter.setNodeLabels(7, Query.addLabel(inserter.getNodeLabels(7), circle3));
 
 		inserter.shutdown();
 	}

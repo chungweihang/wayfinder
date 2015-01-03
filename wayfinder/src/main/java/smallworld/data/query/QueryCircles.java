@@ -6,14 +6,26 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
 
+import org.junit.Test;
 import org.neo4j.cypher.javacompat.ExecutionResult;
+import org.neo4j.graphdb.DynamicLabel;
 import org.neo4j.graphdb.Label;
 import org.neo4j.graphdb.Node;
 import org.neo4j.graphdb.Relationship;
+import org.neo4j.graphdb.Transaction;
 
 public class QueryCircles {
 	
 	private Query query;
+	
+	private static QueryCircles INSTANCE = null;
+	
+	public static synchronized QueryCircles getInstance() {
+		if (INSTANCE == null) {
+			INSTANCE = new QueryCircles(Query.getInstance());
+		}
+		return INSTANCE;
+	}
 	
 	public QueryCircles(Query query) {
 		this.query = query;
@@ -49,10 +61,6 @@ public class QueryCircles {
 	
 	public static Iterable<String> getCircles(Node n) {
 		return n.getPropertyKeys();
-	}
-	
-	public static Iterable<Label> getCircleLabels(Node n) {
-		return n.getLabels();
 	}
 	
 	public static int getMinCommonCircle(Node m, Node n) {
@@ -97,8 +105,28 @@ public class QueryCircles {
 		return commons;
 	}
 	
-	public Long sizeOfCircle(String circle) {
-		ExecutionResult result = query.cypherQuery("MATCH (n:`" + circle + "`) RETURN COUNT(n) AS size");
+	public Iterable<Label> getCircleLabels(Node n) {
+		try (Transaction tx = query.getGraphDatabaseService().beginTx()) {
+			return n.getLabels();
+		}
+	}
+	
+	public Set<Label> getCommonCircleLabels(Node m, Node n) {
+		Set<Label> commons = new HashSet<>();
+		try (Transaction tx = query.getGraphDatabaseService().beginTx()) {
+			for (Iterator<Label> circles = getCircleLabels(m).iterator(); circles.hasNext(); ) {
+		
+				Label circle = circles.next();
+				if (n.hasLabel(circle)) {
+					commons.add(circle);
+				}
+			}
+		}
+		return commons;
+	}
+	
+	public Long sizeOfCircleLabel(Label circle) {
+		ExecutionResult result = query.cypherQuery("MATCH (n:`" + circle.name() + "`) RETURN COUNT(n) AS size");
 		for (Iterator<Long> it = result.columnAs("size"); it.hasNext(); ) {
 			Long size = it.next();
 			if (size != null) return size;
@@ -107,8 +135,56 @@ public class QueryCircles {
 		return 0l;
 	}
 	
+	public Long getMinCommonCircleLabel(Node m, Node n) {
+		Set<Label> circles = getCommonCircleLabels(m, n);
+		
+		Long min = Long.MAX_VALUE;
+		
+		for (Label circle : circles) {
+			Long size = sizeOfCircleLabel(circle);
+			if (min > size) {
+				min = size;
+			}
+		}
+	
+		return min;
+	}
+	
+	public Long getMaxCommonCircleLabel(Node m, Node n) {
+		Set<Label> circles = getCommonCircleLabels(m, n);
+		
+		Long max = 0l;
+		
+		for (Label circle : circles) {
+			Long size = sizeOfCircleLabel(circle);
+			if (max < size) {
+				max = size;
+			}
+		}
+		
+		return max;
+	}
+	
 	public void shutdown() {
 		query.shutdown();
+	}
+	
+	public static class QueryCirclesTest {
+		@Test
+		public void test() {
+			Query q = new Query("neo4j/simple");
+			QueryCircles qc = new QueryCircles(q);
+			
+			System.out.println(qc.getCircleLabels(q.getNode(1)));
+			System.out.println(qc.getCircleLabels(q.getNode(4)));
+			System.out.println(qc.sizeOfCircleLabel(DynamicLabel.label("circle1")));
+			System.out.println(qc.getMaxCommonCircleLabel(q.getNode(4), q.getNode(1)));
+			System.out.println(qc.getMaxCommonCircleLabel(q.getNode(4), q.getNode(5)));
+			System.out.println(qc.getCommonCircleLabels(q.getNode(1), q.getNode(4)));
+			System.out.println(qc.getCommonCircleLabels(q.getNode(5), q.getNode(4)));
+			System.out.println(qc.getCommonCircleLabels(q.getNode(5), q.getNode(7)));
+			System.out.println(qc.getCommonCircleLabels(q.getNode(5), q.getNode(1)));
+		}
 	}
 	
 	/**
@@ -117,7 +193,7 @@ public class QueryCircles {
 	public static void main(String[] args) {
 		Query q = new Query("neo4j/facebook");
 		QueryCircles qc = new QueryCircles(q);
-		/*
+		
 		Long[] nodes = q.allNodes();
 		int count = 0;
 		int total = 0;
@@ -131,7 +207,7 @@ public class QueryCircles {
 		}
 		
 		System.out.println(count + " / " + nodes.length + " total: " + total);
-		*/
+		
 		/*
 		List<String> names = qc.getCircleNames(0);
 		for (int i = 0; i < names.size(); i++) {

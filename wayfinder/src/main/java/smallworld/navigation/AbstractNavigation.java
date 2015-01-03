@@ -126,8 +126,10 @@ public abstract class AbstractNavigation implements PathFinder<Path> {
 			return new PrioritizedDFSNavigation((PrioritizedDFSNavigation) nav);
 		} else if (nav instanceof TrainingNavigation) {
 			return new TrainingNavigation((TrainingNavigation) nav);
+		/*
 		} else if (nav instanceof SARSANavigation) {
 			return new SARSANavigation((SARSANavigation) nav);
+		*/
 		} else if (nav instanceof PathFinder<?>) {
 			return nav;
 		}

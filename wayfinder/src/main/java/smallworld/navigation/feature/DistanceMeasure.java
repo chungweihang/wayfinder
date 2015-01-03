@@ -7,11 +7,10 @@ import org.neo4j.graphalgo.PathFinder;
 import org.neo4j.graphdb.Direction;
 import org.neo4j.graphdb.Node;
 import org.neo4j.graphdb.Path;
+import org.neo4j.graphdb.PathExpanders;
 import org.neo4j.graphdb.RelationshipType;
-import org.neo4j.kernel.Traversal;
 
 import smallworld.Constants;
-import smallworld.navigation.AbstractNavigation;
 import smallworld.util.Pair;
 
 import com.google.common.cache.CacheBuilder;
@@ -26,7 +25,7 @@ public class DistanceMeasure implements Feature<Double> {
 	private static final String NAME = "DistanceLabel";
 	
 	public DistanceMeasure(String dataset, RelationshipType type, Direction direction) {
-		finder = GraphAlgoFactory.shortestPath(Traversal.pathExpanderForTypes(type, direction), Constants.LIMIT_OF_DEPTH);
+		finder = GraphAlgoFactory.shortestPath(PathExpanders.forTypeAndDirection(type, direction), Constants.LIMIT_OF_DEPTH);
 		
 		//cache = FeatureCache.getInstance(dataset);
 		cache = CacheBuilder.newBuilder()

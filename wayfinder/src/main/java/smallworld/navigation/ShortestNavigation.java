@@ -13,12 +13,12 @@ import org.neo4j.graphdb.Direction;
 import org.neo4j.graphdb.Node;
 import org.neo4j.graphdb.Path;
 import org.neo4j.graphdb.PathExpander;
+import org.neo4j.graphdb.PathExpanders;
 import org.neo4j.graphdb.PropertyContainer;
 import org.neo4j.graphdb.Relationship;
 import org.neo4j.graphdb.RelationshipType;
 import org.neo4j.graphdb.traversal.BranchState;
 import org.neo4j.helpers.collection.PrefetchingIterator;
-import org.neo4j.kernel.Traversal;
 
 import smallworld.Constants;
 import smallworld.data.RelationshipTypes;
@@ -224,7 +224,7 @@ public class ShortestNavigation extends AbstractNavigation {
 		DistanceMeasure distanceFeature = new DistanceMeasure(dataset, type, direction);
 		AbstractNavigation.setDistanceMeasure(distanceFeature);
 		
-		PathFinder<Path> nav = new ShortestNavigation(Traversal.pathExpanderForTypes(type, direction));
+		PathFinder<Path> nav = new ShortestNavigation(PathExpanders.forTypeAndDirection(type, direction));
 		//new ConcurrentMain(nav, "neo4j/" + dataset, 1, 1, "temp.shortest.log");
 		
 		Query q = new Query("neo4j/" + dataset);

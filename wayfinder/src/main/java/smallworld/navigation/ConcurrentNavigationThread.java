@@ -57,7 +57,7 @@ public class ConcurrentNavigationThread implements Callable<Path> {
 	}
 	
 	@Override
-	public Path call() throws Exception {
+	public Path call() {
 		try (Transaction tx = graphDb.beginTx()) {
 			path = nav.findSinglePath(source, sink);
 			
@@ -66,34 +66,38 @@ public class ConcurrentNavigationThread implements Callable<Path> {
 				tx.success();
 			}
 			
-			if (path != null) {
-				//print.println(path.length() + ", " + this.getNumberOfNodesExplored() + ", " + path);
-				if (nav instanceof AbstractNavigation) {
-					AbstractNavigation abstractNav = (AbstractNavigation) nav;
-					log.write(new StringBuilder()
-							.append(serialNumber).append(",")
-							.append(source.getId()).append(",")
-							.append(sink.getId()).append(",")
-							.append(path.length()).append(",")
-							.append(this.getNumberOfNodesExplored()).append(",")
-							.append(abstractNav.getNumberOfVisitedNodesShorteningPaths()).append(",")
-							.append(abstractNav.getNumberOfVisitedNodes()).append(System.getProperty("line.separator")).toString());
+			try {
+				if (path != null) {
+					//print.println(path.length() + ", " + this.getNumberOfNodesExplored() + ", " + path);
+					if (nav instanceof AbstractNavigation) {
+						AbstractNavigation abstractNav = (AbstractNavigation) nav;
+						log.write(new StringBuilder()
+								.append(serialNumber).append(",")
+								.append(source.getId()).append(",")
+								.append(sink.getId()).append(",")
+								.append(path.length()).append(",")
+								.append(this.getNumberOfNodesExplored()).append(",")
+								.append(abstractNav.getNumberOfVisitedNodesShorteningPaths()).append(",")
+								.append(abstractNav.getNumberOfVisitedNodes()).append(System.getProperty("line.separator")).toString());
+					} else {
+						log.write(new StringBuilder()
+						.append(serialNumber).append(",")
+						.append(source.getId()).append(",")
+						.append(sink.getId()).append(",")
+						.append(path.length()).append(",")
+						.append(this.getNumberOfNodesExplored()).append(System.getProperty("line.separator")).toString());
+					}
 				} else {
 					log.write(new StringBuilder()
 					.append(serialNumber).append(",")
 					.append(source.getId()).append(",")
-					.append(sink.getId()).append(",")
-					.append(path.length()).append(",")
-					.append(this.getNumberOfNodesExplored()).append(System.getProperty("line.separator")).toString());
+					.append(sink.getId()).append(System.getProperty("line.separator")).toString());
 				}
-			} else {
-				log.write(new StringBuilder()
-				.append(serialNumber).append(",")
-				.append(source.getId()).append(",")
-				.append(sink.getId()).append(System.getProperty("line.separator")).toString());
+				
+				log.flush();
+			} catch (IOException e) {
+				e.printStackTrace();
 			}
-			
-			log.flush();
 			
 			return path;
 		} finally {

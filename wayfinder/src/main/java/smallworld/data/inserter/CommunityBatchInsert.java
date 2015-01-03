@@ -165,6 +165,7 @@ public class CommunityBatchInsert {
 						System.err.println(new StringBuilder("node ").append(target).append(" does not exist!").toString());
 					}
 					
+					// TODO: Use labels instead of properties
 					inserter.setNodeProperty(target, communityName, tokens.length);
 				}
 			}

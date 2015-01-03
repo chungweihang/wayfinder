@@ -23,7 +23,8 @@ public class MinCommonCircleEvaluator implements Evaluator<Integer> {
 
 	@Override
 	public Integer getCost(Node end, Node target) {
-		return QueryCircles.getMinCommonCircle(end, target);
+		//return QueryCircles.getMinCommonCircle(end, target);
+		return QueryCircles.getInstance().getMinCommonCircleLabel(end, target).intValue();
 	}
 
 }

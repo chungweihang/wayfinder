@@ -14,6 +14,7 @@ import org.neo4j.graphdb.Direction;
 import org.neo4j.graphdb.Node;
 import org.neo4j.graphdb.Path;
 import org.neo4j.graphdb.PathExpander;
+import org.neo4j.graphdb.PathExpanders;
 import org.neo4j.graphdb.RelationshipType;
 import org.neo4j.graphdb.traversal.TraversalBranch;
 import org.neo4j.graphdb.traversal.TraversalDescription;
@@ -35,7 +36,7 @@ public class TraversalNavigation implements PathFinder<Path> {
 	private Traverser lastTraverser;
 	private final Evaluator<Integer> evaluator;
 	
-	public TraversalNavigation(PathExpander expander,
+	public TraversalNavigation(PathExpander<?> expander,
 			Evaluator<Integer> evaluator) {
 		//this.costEvaluator = costEvaluator;
 		//this.estimateEvaluator = estimateEvaluator;
@@ -120,7 +121,7 @@ public class TraversalNavigation implements PathFinder<Path> {
 				
 		RelationshipType type = RelationshipTypes.FRIEND.type();
 		
-		PathFinder<Path> nav = new TraversalNavigation(Traversal.pathExpanderForTypes(type, direction), new DegreeEvaluator(type, direction));
+		PathFinder<Path> nav = new TraversalNavigation(PathExpanders.forTypeAndDirection(type, direction), new DegreeEvaluator(type, direction));
 		//new ConcurrentMain(nav, "neo4j/" + dataset, 1, 1, "temp.shortest.log");
 		
 		Query q = new Query("neo4j/" + dataset);

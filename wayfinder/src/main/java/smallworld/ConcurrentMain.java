@@ -11,7 +11,6 @@ import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.HashSet;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Random;
 import java.util.Set;
@@ -35,7 +34,6 @@ import org.neo4j.graphdb.Node;
 import org.neo4j.graphdb.Path;
 import org.neo4j.graphdb.PathExpanders;
 import org.neo4j.graphdb.RelationshipType;
-import org.neo4j.graphdb.Transaction;
 
 import smallworld.data.RelationshipTypes;
 import smallworld.data.query.Query;
@@ -97,7 +95,8 @@ public class ConcurrentMain implements NavigationCompleteListener {
 	 * @throws IOException 
 	 */
 	public ConcurrentMain(PathFinder<Path> nav, String neo4jPath, int numberOfPairs, int randomSeed, String log) throws IOException {
-		Query q = new Query(neo4jPath);
+		//Query q = new Query(neo4jPath);
+		Query q = Query.getInstance();
 		
 		long time = System.currentTimeMillis();
 		calendar.set(Calendar.getInstance());
@@ -282,6 +281,7 @@ public class ConcurrentMain implements NavigationCompleteListener {
 			
 			// Neo4J path for the graph
 			String path = "neo4j" + File.separator + args[NEO4J_PATH];
+			Constants.NEO4J_PATH = path;
 			
 			// Relation type
 			RelationshipType type = null;

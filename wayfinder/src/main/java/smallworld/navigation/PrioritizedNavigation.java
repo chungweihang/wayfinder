@@ -83,7 +83,6 @@ public class PrioritizedNavigation extends AbstractNavigation implements Compara
 		private final Set<Long> queueNodes = new HashSet<Long>();
 		private Path currentPath = null;
 		//private final PriorityQueue<Path> queue = new PriorityQueue<Path>(10, PrioritizedNavigation.this);
-		@SuppressWarnings("unused")
 		private final MinMaxPriorityQueue<Path> queue = (Constants.PRORITY_QUEUE_MAX_SIZE == -1 ? 
 				MinMaxPriorityQueue.orderedBy(PrioritizedNavigation.this).create() :
 				MinMaxPriorityQueue.orderedBy(PrioritizedNavigation.this).maximumSize(Constants.PRORITY_QUEUE_MAX_SIZE).create());

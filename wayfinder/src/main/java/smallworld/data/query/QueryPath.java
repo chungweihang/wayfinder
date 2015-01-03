@@ -4,7 +4,6 @@ import java.io.PrintStream;
 import java.util.Iterator;
 import java.util.List;
 
-import org.neo4j.graphdb.Label;
 import org.neo4j.graphdb.Node;
 
 import smallworld.data.RelationshipTypes;

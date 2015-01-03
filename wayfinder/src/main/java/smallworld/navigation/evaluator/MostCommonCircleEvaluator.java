@@ -20,7 +20,8 @@ public class MostCommonCircleEvaluator implements Evaluator<Integer> {
 	@Override
 	public Integer getCost(Node end, Node target) {
 		int count = 0;
-		count = QueryCircles.getCommonCircles(target, end).size();
+		//count = QueryCircles.getCommonCircles(target, end).size();
+		count = QueryCircles.getInstance().getCommonCircleLabels(target, end).size();
 		
 		return 0-count;
 	}

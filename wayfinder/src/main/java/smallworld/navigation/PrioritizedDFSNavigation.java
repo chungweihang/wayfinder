@@ -16,12 +16,12 @@ import org.neo4j.graphdb.Direction;
 import org.neo4j.graphdb.Node;
 import org.neo4j.graphdb.Path;
 import org.neo4j.graphdb.PathExpander;
+import org.neo4j.graphdb.PathExpanders;
 import org.neo4j.graphdb.PropertyContainer;
 import org.neo4j.graphdb.Relationship;
 import org.neo4j.graphdb.RelationshipType;
 import org.neo4j.graphdb.traversal.BranchState;
 import org.neo4j.helpers.collection.PrefetchingIterator;
-import org.neo4j.kernel.Traversal;
 
 import smallworld.Constants;
 import smallworld.data.RelationshipTypes;
@@ -52,6 +52,7 @@ import com.google.common.collect.Lists;
  * @author chang
  *
  */
+@Deprecated
 public class PrioritizedDFSNavigation extends AbstractNavigation implements Comparator<Path> {
 
 	private final PathExpander<?> expander;
@@ -245,7 +246,7 @@ public class PrioritizedDFSNavigation extends AbstractNavigation implements Comp
 		DistanceMeasure distanceFeature = new DistanceMeasure(dataset, type, direction);
 		AbstractNavigation.setDistanceMeasure(distanceFeature);
 		
-		PathFinder<Path> nav = new PrioritizedDFSNavigation(Traversal.pathExpanderForTypes(type, direction), new DegreeEvaluator(type, direction));
+		PathFinder<Path> nav = new PrioritizedDFSNavigation(PathExpanders.forTypeAndDirection(type, direction), new DegreeEvaluator(type, direction));
 		
 		Query q = new Query("neo4j/" + dataset);
 		nav.findSinglePath(q.getNode(373654), q.getNode(1557));

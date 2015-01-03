@@ -101,6 +101,7 @@ public class MSAcademyBatchInserter {
         		MSPaperAuthor author = authors.get(i);
         		this.createAuthor(author);
         		// set "venue" and "venue-year" as circles
+        		// TODO: Use labels instead of properties
         		if (venue != null && venue.getFullName().length() > 0) {
         			inserter.setNodeProperty(author.getAuthorId(), venue.getFullName(), MSPaperAuthor.circleAuthorMap.get(venue.getFullName()).size());
         			inserter.setNodeProperty(author.getAuthorId(), venue.getFullName() + " " + paper.getYear(), MSPaperAuthor.circleAuthorMap.get(venue.getFullName() + " " + paper.getYear()).size());

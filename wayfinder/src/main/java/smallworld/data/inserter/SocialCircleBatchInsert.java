@@ -14,11 +14,14 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import org.neo4j.graphdb.DynamicLabel;
+import org.neo4j.graphdb.Label;
 import org.neo4j.kernel.impl.util.FileUtils;
 import org.neo4j.unsafe.batchinsert.BatchInserter;
 import org.neo4j.unsafe.batchinsert.BatchInserters;
 
 import smallworld.data.RelationshipTypes;
+import smallworld.data.query.Query;
 
 /**
  * Batch insert data to neo4j
@@ -311,7 +314,6 @@ public class SocialCircleBatchInsert {
 				// ego is assumed to connect to both src and det
 				this.createRelationship(inserter, ego, src);
 				this.createRelationship(inserter, ego, det);
-				
 				this.createRelationship(inserter, src, det);
 			}
 			
@@ -329,7 +331,7 @@ public class SocialCircleBatchInsert {
 					int bit = Integer.parseInt(tokens[i]);
 					
 					if (1 == bit) {
-						properties.put(features.get(i-1), "");
+						props.put(features.get(i-1), "");
 					}
 				}
 				
@@ -338,27 +340,32 @@ public class SocialCircleBatchInsert {
 				inserter.createRelationship(nodes.get(ego), nodes.get(target), RelationshipTypes.KNOWS.type(), props);
 			}
 			
-			// insert "circle" relationships (circles)
+			// Consider each circle as a label
 			List<String> circles = readLine(egoString + ".circles");
 			for (String line : circles) {
 				// circle ego1 ego2 ...
 				String[] tokens = line.split("\t");
 				
-				if (tokens.length > maxCircle) maxCircle = tokens.length;
-				totalCircleSize += tokens.length;
+				// Size of circle: ego + all the nodes in tokens = 1 + tokens.length - 1 = tokens.length
+				int circleSize = tokens.length;
+				if (circleSize > maxCircle) maxCircle = circleSize;
+				totalCircleSize += circleSize;
 				numberCircles++;
 				
-				inserter.setNodeProperty(nodes.get(ego), ego + ":" + tokens[0], tokens.length);
-				//System.out.printf("add %s to circle %s of size %d\n", ego, ego + ":" + tokens[0], tokens.length);
+				String circleName = ego + ":" + tokens[0];
+				Label circleLabel = DynamicLabel.label(circleName);
+				inserter.setNodeLabels(nodes.get(ego), Query.addLabel(inserter.getNodeLabels(nodes.get(ego)), circleLabel));
+				//inserter.setNodeProperty(nodes.get(ego), circleName, circleSize);
+				//System.out.printf("add %s to circle %s of size %d\n", ego, circleName, circleSize);
 				
 				for (int i = 1; i < tokens.length; i++) {
 					BigInteger target = new BigInteger(tokens[i]);
 					
 					this.createNode(inserter, target);
 					this.createRelationship(inserter, ego, target);
-					inserter.setNodeProperty(nodes.get(target), ego + ":" + tokens[0], tokens.length);
-					
-					//System.out.printf("add %s to circle %s of size %d\n", target, ego + ":" + tokens[0], tokens.length);
+					inserter.setNodeLabels(nodes.get(target), Query.addLabel(inserter.getNodeLabels(nodes.get(target)), circleLabel));
+					//inserter.setNodeProperty(nodes.get(target), circleName, circleSize);
+					//System.out.printf("add %s to circle %s of size %d\n", target, circleName, circleSize);
 				}
 			}
 		}

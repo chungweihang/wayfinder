@@ -9,12 +9,10 @@ import org.neo4j.graphdb.Direction;
 import org.neo4j.graphdb.Node;
 import org.neo4j.graphdb.Path;
 import org.neo4j.graphdb.RelationshipType;
-import org.neo4j.kernel.Traversal;
 
 import smallworld.ConcurrentMain;
 import smallworld.data.RelationshipTypes;
 import smallworld.navigation.AbstractNavigation;
-import smallworld.navigation.PrioritizedDFSNavigation;
 import smallworld.navigation.feature.DistanceMeasure;
 import smallworld.navigation.feature.FeatureBuilder;
 import weka.classifiers.Classifier;

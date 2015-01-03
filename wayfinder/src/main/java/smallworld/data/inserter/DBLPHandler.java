@@ -1,4 +1,4 @@
-package smallworld.data.dblp;
+package smallworld.data.inserter;
 
 import java.io.File;
 import java.io.IOException;

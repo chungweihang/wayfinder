@@ -15,12 +15,12 @@ import org.neo4j.graphdb.Node;
 import org.neo4j.graphdb.Path;
 import org.neo4j.graphdb.PathExpanders;
 import org.neo4j.graphdb.Transaction;
-import org.neo4j.kernel.Traversal;
-import org.omg.IOP.TransactionService;
 
 import smallworld.data.RelationshipTypes;
 import smallworld.data.query.Query;
 import smallworld.navigation.AbstractNavigation;
+import smallworld.navigation.PrioritizedNavigation;
+import smallworld.navigation.evaluator.MostCommonCircleEvaluator;
 
 @Deprecated
 public class Main {
@@ -30,7 +30,8 @@ public class Main {
 	}
 	
 	public static void run(PathFinder<Path> nav, String neo4jPath, int nodeLimit, PrintStream print) {
-		Query q = new Query(neo4jPath);
+		Constants.NEO4J_PATH = neo4jPath;
+		Query q = Query.getInstance();
 
 		long time = System.currentTimeMillis();
 		
@@ -76,8 +77,8 @@ public class Main {
 		// Social Circle
 		//run(new Navigation(Traversal.pathExpanderForTypes(RelationshipTypes.FRIEND.type(), Direction.OUTGOING), new OutDegreeEvaluator()), "neo4j/facebook3", 100, new PrintStream("outdegree.sample.log"));
 		//run(new Navigation(Traversal.pathExpanderForTypes(RelationshipTypes.FRIEND.type(), Direction.OUTGOING), new FewestCommonFeatureEvaluator()), "neo4j/facebook3", 100, new PrintStream("fewest_common_allfeature.sample.log"));
-		//run(new Navigation(Traversal.pathExpanderForTypes(RelationshipTypes.FRIEND.type(), Direction.OUTGOING), new MostCommonFeatureEvaluator()), "neo4j/facebook3", 100, new PrintStream("most_common_allfeature.sample.log"));
-		run(GraphAlgoFactory.shortestPath(PathExpanders.forTypeAndDirection(RelationshipTypes.FRIEND.type(), Direction.OUTGOING), 10), "neo4j/facebook", 100, new PrintStream("shortest.sample.log"));
+		run(new PrioritizedNavigation(PathExpanders.forTypeAndDirection(RelationshipTypes.FRIEND.type(), Direction.OUTGOING), new MostCommonCircleEvaluator()), "neo4j/facebook", 100, new PrintStream("most_common_allfeature.sample.log"));
+		//run(GraphAlgoFactory.shortestPath(PathExpanders.forTypeAndDirection(RelationshipTypes.FRIEND.type(), Direction.OUTGOING), 10), "neo4j/facebook", 100, new PrintStream("shortest.sample.log"));
 		
 		// Community
 		// run(GraphAlgoFactory.shortestPath(Traversal.pathExpanderForTypes(smallworld.data.community.RelationshipTypes.FRIEND.type(), Direction.BOTH), 20), "neo4j/dblp", 100, new PrintStream("dblp.shortest.100sample.log"));
