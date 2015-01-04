@@ -7,6 +7,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.neo4j.graphdb.DynamicLabel;
 import org.neo4j.kernel.impl.util.FileUtils;
 import org.neo4j.unsafe.batchinsert.BatchInserter;
 import org.neo4j.unsafe.batchinsert.BatchInserters;
@@ -15,6 +16,7 @@ import smallworld.data.RelationshipTypes;
 import smallworld.data.inserter.msacademy.MSPaper;
 import smallworld.data.inserter.msacademy.MSPaperAuthor;
 import smallworld.data.inserter.msacademy.MSVenue;
+import smallworld.data.query.Query;
 
 import com.google.common.collect.HashMultimap;
 import com.google.common.collect.Multimap;
@@ -103,8 +105,10 @@ public class MSAcademyBatchInserter {
         		// set "venue" and "venue-year" as circles
         		// TODO: Use labels instead of properties
         		if (venue != null && venue.getFullName().length() > 0) {
-        			inserter.setNodeProperty(author.getAuthorId(), venue.getFullName(), MSPaperAuthor.circleAuthorMap.get(venue.getFullName()).size());
-        			inserter.setNodeProperty(author.getAuthorId(), venue.getFullName() + " " + paper.getYear(), MSPaperAuthor.circleAuthorMap.get(venue.getFullName() + " " + paper.getYear()).size());
+        			//inserter.setNodeProperty(author.getAuthorId(), venue.getFullName(), MSPaperAuthor.circleAuthorMap.get(venue.getFullName()).size());
+        			//inserter.setNodeProperty(author.getAuthorId(), venue.getFullName() + " " + paper.getYear(), MSPaperAuthor.circleAuthorMap.get(venue.getFullName() + " " + paper.getYear()).size());
+        			inserter.setNodeLabels(author.getAuthorId(), Query.addLabel(inserter.getNodeLabels(author.getAuthorId()), DynamicLabel.label(venue.getFullName())));
+        			inserter.setNodeLabels(author.getAuthorId(), Query.addLabel(inserter.getNodeLabels(author.getAuthorId()), DynamicLabel.label(venue.getFullName() + " " + paper.getYear())));
         		} 
         		for (int j = i+1; j < authors.size(); j++) {
         			MSPaperAuthor coauthor = authors.get(j);
@@ -112,8 +116,10 @@ public class MSAcademyBatchInserter {
         			this.createCoauthorship(author, coauthor);
         			// set "venue" and "venue-year" as circles
         			if (venue != null && venue.getFullName().length() > 0) {
-        				inserter.setNodeProperty(coauthor.getAuthorId(), venue.getFullName(), MSPaperAuthor.circleAuthorMap.get(venue.getFullName()).size());
-            			inserter.setNodeProperty(coauthor.getAuthorId(), venue.getFullName() + " " + paper.getYear(), MSPaperAuthor.circleAuthorMap.get(venue.getFullName() + " " + paper.getYear()).size());
+        				//inserter.setNodeProperty(coauthor.getAuthorId(), venue.getFullName(), MSPaperAuthor.circleAuthorMap.get(venue.getFullName()).size());
+            			//inserter.setNodeProperty(coauthor.getAuthorId(), venue.getFullName() + " " + paper.getYear(), MSPaperAuthor.circleAuthorMap.get(venue.getFullName() + " " + paper.getYear()).size());
+            			inserter.setNodeLabels(coauthor.getAuthorId(), Query.addLabel(inserter.getNodeLabels(coauthor.getAuthorId()), DynamicLabel.label(venue.getFullName())));
+            			inserter.setNodeLabels(coauthor.getAuthorId(), Query.addLabel(inserter.getNodeLabels(coauthor.getAuthorId()), DynamicLabel.label(venue.getFullName() + " " + paper.getYear())));
             		}
         		}
         	}

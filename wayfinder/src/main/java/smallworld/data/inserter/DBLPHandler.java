@@ -11,6 +11,8 @@ import java.util.Map;
 import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.parsers.SAXParserFactory;
 
+import org.neo4j.graphdb.DynamicLabel;
+import org.neo4j.graphdb.Label;
 import org.neo4j.kernel.impl.util.FileUtils;
 import org.neo4j.unsafe.batchinsert.BatchInserter;
 import org.neo4j.unsafe.batchinsert.BatchInserters;
@@ -19,6 +21,7 @@ import org.xml.sax.SAXException;
 import org.xml.sax.helpers.DefaultHandler;
 
 import smallworld.data.RelationshipTypes;
+import smallworld.data.query.Query;
 
 import com.google.common.collect.ArrayListMultimap;
 import com.google.common.collect.HashMultimap;
@@ -157,13 +160,14 @@ public class DBLPHandler extends DefaultHandler {
     	int progress = 0;
     	// add circles
     	for (String circle : circleToPeople.keySet()) {
-    		
+    		Label circleLabel = DynamicLabel.label(circle);
     		if (++progress % 1000 == 0) System.err.println("adding circle: " + progress + "/" + circleToPeople.keySet().size());
     		
     		Collection<Long> people = circleToPeople.get(circle);
     		totalSizeOfCircles += people.size();
     		for (Long id : people) {
-    			inserter.setNodeProperty(id, circle, people.size());
+    			inserter.setNodeLabels(id, Query.addLabel(inserter.getNodeLabels(id), circleLabel));
+    			//inserter.setNodeProperty(id, circle, people.size());
     			//System.err.println("node " + id + " belong to " + circle + " of size " + people.size());
     		}
     	}

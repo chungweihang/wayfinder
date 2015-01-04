@@ -10,11 +10,14 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
+import org.neo4j.graphdb.DynamicLabel;
+import org.neo4j.graphdb.Label;
 import org.neo4j.kernel.impl.util.FileUtils;
 import org.neo4j.unsafe.batchinsert.BatchInserter;
 import org.neo4j.unsafe.batchinsert.BatchInserters;
 
 import smallworld.data.RelationshipTypes;
+import smallworld.data.query.Query;
 
 /**
  * Batch insert data to neo4j
@@ -157,6 +160,7 @@ public class CommunityBatchInsert {
 				if (tokens.length > maxCommunity) maxCommunity = tokens.length;
 				totalCommunitySize += tokens.length;
 				String communityName = new StringBuilder("circle").append(++communityCount).toString();
+				Label communityLabel = DynamicLabel.label(communityName);
 				
 				for (int i = 1; i < tokens.length; i++) {
 					long target = Long.parseLong(tokens[i]);
@@ -165,8 +169,9 @@ public class CommunityBatchInsert {
 						System.err.println(new StringBuilder("node ").append(target).append(" does not exist!").toString());
 					}
 					
-					// TODO: Use labels instead of properties
-					inserter.setNodeProperty(target, communityName, tokens.length);
+					//inserter.setNodeProperty(target, communityName, tokens.length);
+					inserter.setNodeLabels(target, Query.addLabel(inserter.getNodeLabels(target), communityLabel));
+					
 				}
 			}
 		} catch (FileNotFoundException e) {
