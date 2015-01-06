@@ -84,6 +84,16 @@ public class Query {
 		print(cypherQuery("START n=node(*) RETURN count(*)"));
 	}
 	
+	public void clusteringCoefficient() {
+		cypherQuery( 
+        		"START a = node(*) " +
+        		"MATCH (a)-[:FRIEND]-(b) " +
+        		"WITH a, count(distinct b) as n " +
+        		"MATCH (a)-[:FRIEND]-()-[r:FRIEND]-()-[:FRIEND]-(a) " +
+        		"WITH toFloat(count(distinct r)) * 2 / (n * (n-1)) AS cc, a " +
+        		"SET a.clustering_coefficient = cc");
+	}
+	
 	public Long clusteringCoefficient(long ego) {
 		// clustering coefficient 
         // r / (n! / (2!(n-2)!))
@@ -448,10 +458,11 @@ public class Query {
 		
 		Query q = new Query("neo4j/" + dataset);
 		
-		q.numberOfNode();
-		q.numberOfRelationships();
-		System.out.println(q.clusteringCoefficient(5));
-		q.betweennessCentrality();
+		//q.numberOfNode();
+		//q.numberOfRelationships();
+		//System.out.println(q.clusteringCoefficient(5));
+		//q.betweennessCentrality();
+		q.clusteringCoefficient();
 		
 		// System.out.println(q.getRelationshipsFrom(809864, "FRIEND", Direction.OUTGOING).size());
 		
