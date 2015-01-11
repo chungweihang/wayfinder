@@ -16,5 +16,6 @@ public class BetweennessCentrality {
 		String dataset = args[0];
 		Query q = new Query("neo4j/" + dataset);
 		q.betweennessCentrality();
+		q.shutdown();
 	}
 }
