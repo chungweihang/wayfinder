@@ -158,15 +158,16 @@ public class ConcurrentMain implements NavigationCompleteListener {
 		q.shutdown();
 	}
 	
+	private boolean updateBetweennessCentrality = false;
+	private static final String BETWEENNESS_CENTRALITY = "betweenness_centrality";
 	@Override
 	public void notifyOfThreadComplete(ConcurrentNavigationThread thread) {
 		Path p = thread.getPath();
 	
-		/*
 		if (updateBetweennessCentrality) {
 			updateBetweennessCentrality(p);
 		}
-		*/
+	
 		int count = numberOfPairsNavigated.incrementAndGet();
 		if (p != null) {
 			numberOfPairsPathFound.incrementAndGet();
@@ -184,6 +185,15 @@ public class ConcurrentMain implements NavigationCompleteListener {
 				calendar.set(now);
 				//logger.log(Level.INFO, String.format("[ConcurrentMain] PROGRESS %d/%d\tLength: %.4f\tNodes: %.4f\t[%s]", count, numberOfPairsToBeNavigated, ((double)length)/count, ((double)nodes)/count, new Date().toString()));
 				System.out.printf("[ConcurrentMain] PROGRESS %d/%d\tLength: %.4f\tNodes: %.4f\t[%s]\n", count, numberOfPairsToBeNavigated, ((double)length)/count, ((double)nodes)/count, new Date().toString());
+			}
+		}
+	}
+
+	private void updateBetweennessCentrality(Path p) {
+		if (p == null || p.length() <= 1) return;
+		for (Node n : p.nodes()) {
+			if (n.getId() != p.startNode().getId() && n.getId() != p.endNode().getId()) {
+				n.setProperty(BETWEENNESS_CENTRALITY, n.getProperty(BETWEENNESS_CENTRALITY, 0));
 			}
 		}
 	}
