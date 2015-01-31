@@ -105,7 +105,7 @@ public class ConcurrentMain implements NavigationCompleteListener {
 		List<Long> nodeIds = Arrays.asList(q.allNodes());
 		
 		ExecutorService executor = Executors.newFixedThreadPool(NUMBER_OF_THREADS);
-		List<Future<Path>> list = new ArrayList<Future<Path>>();
+		//List<Future<Path>> list = new ArrayList<Future<Path>>();
 
 		// if no numberOfPairs specified, do all the pairs
 		if (numberOfPairs == -1) {
@@ -137,7 +137,7 @@ public class ConcurrentMain implements NavigationCompleteListener {
 			worker.addListener(this);
 			
 			Future<Path> submit = executor.submit(worker);
-			list.add(submit);
+			//list.add(submit);
 		}
 		
 		// This will make the executor accept no new threads
@@ -187,6 +187,8 @@ public class ConcurrentMain implements NavigationCompleteListener {
 				System.out.printf("[ConcurrentMain] PROGRESS %d/%d\tLength: %.4f\tNodes: %.4f\t[%s]\n", count, numberOfPairsToBeNavigated, ((double)length)/count, ((double)nodes)/count, new Date().toString());
 			}
 		}
+		
+		thread.removeListener(this);
 	}
 
 	private void updateBetweennessCentrality(Path p) {
