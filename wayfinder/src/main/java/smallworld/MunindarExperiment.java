@@ -51,22 +51,41 @@ public class MunindarExperiment {
 				depth++;
 				degrees.put(depth, Double.valueOf(node.getDegree()));
 				betweennessCentralities.put(depth, Double.valueOf((Integer) node.getProperty("betweenness_centrality", 0)));
-				clusteringCoefficients.put(depth, (Double) node.getProperty("clustering_coefficient", "0"));
+				clusteringCoefficients.put(depth, (Double) node.getProperty("clustering_coefficient", Double.valueOf(0)));
 			}
 		}
 	}
 	
 	public static Path randomWalk(GraphDatabaseService service, Node source, int maxDepth) {
 		Path p = Utils.toPath(source, null);
+		Set<Long> visited = new HashSet<>(maxDepth);
+		visited.add(source.getId());
 		
 		try (Transaction tx = service.beginTx()) {
 			while (p.length() < maxDepth) {
 				Node endNode = p.endNode();
 				List<Relationship> rels = Lists.newArrayList(endNode.getRelationships());
+				
 				if (rels.isEmpty()) {
 					break;
 				} else {
-					Relationship rel = rels.get(rand.nextInt(rels.size()));
+					
+					
+					Relationship rel = rels.remove(rand.nextInt(rels.size()));
+					Long nextNodeId = rel.getOtherNode(endNode).getId();
+				
+					while (visited.contains(nextNodeId)) {
+						if (!rels.isEmpty()) {
+							rel = rels.remove(rand.nextInt(rels.size()));
+							nextNodeId = rel.getOtherNode(endNode).getId();
+						} else {
+							nextNodeId = null;
+						}
+					}
+					
+					if (nextNodeId == null) break;
+					
+					visited.contains(nextNodeId);
 					List<Relationship> pathRels = Lists.newArrayList(p.relationships());
 					pathRels.add(rel);
 					p = Utils.toPath(source, pathRels);
