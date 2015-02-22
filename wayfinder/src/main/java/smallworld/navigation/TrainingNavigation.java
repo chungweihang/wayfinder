@@ -32,6 +32,7 @@ import smallworld.data.RelationshipTypes;
 import smallworld.navigation.feature.DistanceMeasure;
 import smallworld.navigation.feature.Feature;
 import smallworld.navigation.feature.FeatureBuilder;
+import smallworld.util.Utils;
 import weka.core.converters.ArffSaver;
 
 /**
@@ -94,7 +95,7 @@ public class TrainingNavigation extends AbstractNavigation {
 			this.start = start;
 			this.end = end;
 
-			queue.push(toPath(start, null)); // stack
+			queue.push(Utils.toPath(start, null)); // stack
 			queueNodes.add(start.getId());
 		}
 
@@ -147,7 +148,7 @@ public class TrainingNavigation extends AbstractNavigation {
 
 				if (!queueNodes.contains(node.getId())) {
 					rels.add(rel);
-					Path path = toPath(start, rels);
+					Path path = Utils.toPath(start, rels);
 					
 					queueNodes.add(node.getId());
 					pathsToAdd.add(path);

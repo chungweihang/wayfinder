@@ -18,6 +18,7 @@ import org.neo4j.helpers.collection.PrefetchingIterator;
 
 import smallworld.Constants;
 import smallworld.navigation.evaluator.Evaluator;
+import smallworld.util.Utils;
 
 import com.google.common.collect.Lists;
 import com.google.common.collect.MinMaxPriorityQueue;
@@ -91,7 +92,7 @@ public class PrioritizedNavigation extends AbstractNavigation implements Compara
 			this.start = start;
 			this.end = end;
 
-			queue.add(toPath(start, null));
+			queue.add(Utils.toPath(start, null));
 			queueNodes.add(start.getId());
 		}
 
@@ -134,7 +135,7 @@ public class PrioritizedNavigation extends AbstractNavigation implements Compara
 
 				if (!queueNodes.contains(node.getId())) {
 					rels.add(rel);
-					Path path = toPath(start, rels);
+					Path path = Utils.toPath(start, rels);
 					
 					queue.add(path);
 					queueNodes.add(path.endNode().getId());

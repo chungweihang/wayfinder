@@ -24,6 +24,7 @@ import smallworld.Constants;
 import smallworld.data.RelationshipTypes;
 import smallworld.data.query.Query;
 import smallworld.navigation.feature.DistanceMeasure;
+import smallworld.util.Utils;
 
 import com.google.common.collect.Lists;
 
@@ -88,7 +89,7 @@ public class ShortestNavigation extends AbstractNavigation {
 			this.start = start;
 			this.end = end;
 
-			queue.addLast(toPath(start, null));
+			queue.addLast(Utils.toPath(start, null));
 			visitedNodes.add(start.getId());
 		}
 
@@ -156,7 +157,7 @@ public class ShortestNavigation extends AbstractNavigation {
 					visitedNodes.add(node.getId());
 					
 					rels.add(rel);
-					Path path = toPath(start, rels);
+					Path path = Utils.toPath(start, rels);
 					queue.addLast(path);
 					rels.remove(rels.size() - 1);
 					//System.err.println("adding path: " + path);

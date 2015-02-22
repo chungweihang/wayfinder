@@ -29,6 +29,7 @@ import smallworld.data.query.Query;
 import smallworld.navigation.evaluator.DegreeEvaluator;
 import smallworld.navigation.evaluator.Evaluator;
 import smallworld.navigation.feature.DistanceMeasure;
+import smallworld.util.Utils;
 
 import com.google.common.collect.Lists;
 
@@ -110,7 +111,7 @@ public class PrioritizedDFSNavigation extends AbstractNavigation implements Comp
 			this.start = start;
 			this.end = end;
 
-			stack.push(toPath(start, null));
+			stack.push(Utils.toPath(start, null));
 			stackNodes.add(start.getId());
 		}
 
@@ -158,7 +159,7 @@ public class PrioritizedDFSNavigation extends AbstractNavigation implements Comp
 
 				if (!stackNodes.contains(node.getId())) {
 					rels.add(rel);
-					Path path = toPath(start, rels);
+					Path path = Utils.toPath(start, rels);
 					
 					if (!neighbors.add(path)) System.err.println("duplicate");
 					stackNodes.add(node.getId());

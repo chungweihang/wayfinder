@@ -145,24 +145,6 @@ public abstract class AbstractNavigation implements PathFinder<Path> {
 		return path != null ? Arrays.asList(path) : Collections.<Path>emptyList();
 	}
 
-	/**
-	 * Utility method for composing a path.
-	 * 
-	 * @param start
-	 * @param rels
-	 * @return
-	 */
-	protected static Path toPath(Node start, Iterable<Relationship> rels) {
-		PathImpl.Builder builder = new PathImpl.Builder(start);
-		
-		if (rels != null) {
-			for (Relationship rel : rels) {
-				builder = builder.push(rel);
-			}
-		}
-		return builder.build();
-	}
-	
 	@Override
 	public TraversalMetadata metadata() {
 		return lastMetadata;

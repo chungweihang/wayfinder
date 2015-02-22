@@ -1,11 +1,33 @@
 package smallworld.util;
 
+import org.neo4j.graphalgo.impl.util.PathImpl;
+import org.neo4j.graphdb.Node;
+import org.neo4j.graphdb.Path;
+import org.neo4j.graphdb.Relationship;
+
 import weka.core.Instances;
 import weka.core.converters.ConverterUtils.DataSource;
 import weka.core.converters.LibSVMSaver;
 
 public class Utils {
-
+	/**
+	 * Utility method for composing a path.
+	 * 
+	 * @param start
+	 * @param rels
+	 * @return
+	 */
+	public static Path toPath(Node start, Iterable<Relationship> rels) {
+		PathImpl.Builder builder = new PathImpl.Builder(start);
+		
+		if (rels != null) {
+			for (Relationship rel : rels) {
+				builder = builder.push(rel);
+			}
+		}
+		return builder.build();
+	}
+	
 	public static void toLibSVM(String arff, String output) {
 		try {
 			Instances instances = new DataSource(arff).getDataSet();
