@@ -23,12 +23,13 @@ public class Constants {
 	static {
 		try {
 			Properties prop = new Properties();
-	        String propFileName = "resources/config.properties";
+	        String propFileName = "config.properties";
 	        InputStream inputStream = Constants.class.getClassLoader().getResourceAsStream(propFileName);
 	        if (inputStream != null) {
+	        	System.out.println("Loading properties from file...");
 	        	prop.load(inputStream);
 				LIMIT_OF_DEPTH = Integer.parseInt(prop.getProperty("LIMIT_OF_DEPTH", "50"));
-		        PRORITY_QUEUE_MAX_SIZE = Integer.parseInt(prop.getProperty("PRORITY_QUEUE_MAX_SIZE", "10000"));
+		        PRORITY_QUEUE_MAX_SIZE = Integer.parseInt(prop.getProperty("PRIORITY_QUEUE_MAX_SIZE", "10000"));
 		        LIMIT_OF_NODES_EXPLORED = Integer.parseInt(prop.getProperty("LIMIT_OF_NODES_EXPLORED", "1000"));
 		    }
 	        

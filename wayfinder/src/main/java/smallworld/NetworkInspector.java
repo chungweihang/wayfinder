@@ -4,6 +4,8 @@ import java.io.FileNotFoundException;
 import java.io.PrintWriter;
 import java.util.Iterator;
 
+import org.neo4j.graphdb.Label;
+
 import smallworld.data.query.Query;
 import smallworld.data.query.QueryCircles;
 
@@ -16,7 +18,7 @@ public class NetworkInspector {
 		Query q = new Query("neo4j/" + dataset);
 		QueryCircles qc = new QueryCircles(q);
 		
-		Multiset<String> circleSizes = HashMultiset.create();
+		Multiset<Label> circleSizes = HashMultiset.create();
 		Multiset<Integer> peopleSizes = HashMultiset.create();
 		
 		Long[] nodes = q.allNodes();
@@ -24,10 +26,10 @@ public class NetworkInspector {
 		
 		for (Long nid : nodes) {
 			int circleCount = 0;
-			Iterator<String> circles = qc.getCircles(nid).iterator();
+			Iterator<Label> circles = qc.getCircleLabels(q.getNode(nid)).iterator();
 			while (circles.hasNext()) {
 				circleCount++;
-				String circle = circles.next();
+				Label circle = circles.next();
 				circleSizes.add(circle);
 			}
 			
@@ -35,7 +37,7 @@ public class NetworkInspector {
 		}
 		
 		Multiset<Integer> dists = HashMultiset.create();
-		for (String circle : circleSizes.elementSet()) {
+		for (Label circle : circleSizes.elementSet()) {
 			dists.add(circleSizes.count(circle));
 		}
 		

@@ -34,11 +34,11 @@ public class QueryCircles {
 	public QueryCircles(String path) {
 		this(new Query(path));
 	}
-	
+	/*
 	public Iterable<String> getCircles(long ego) {
 		return getCircles(query.getNode(ego));
 	}
-	
+	*/
 	public List<Long> getStartNodes(List<Relationship> rels) {
 		List<Long> nodes = new ArrayList<Long>(rels.size());
 		
@@ -59,10 +59,12 @@ public class QueryCircles {
 		return nodes;
 	}
 	
+	/*
 	public static Iterable<String> getCircles(Node n) {
 		return n.getPropertyKeys();
 	}
-	
+	*/
+	/*
 	public static int getMinCommonCircle(Node m, Node n) {
 		Set<String> circles = getCommonCircles(m, n);
 		
@@ -104,7 +106,7 @@ public class QueryCircles {
 		
 		return commons;
 	}
-	
+	*/
 	public Iterable<Label> getCircleLabels(Node n) {
 		try (Transaction tx = query.getGraphDatabaseService().beginTx()) {
 			return n.getLabels();
@@ -198,7 +200,8 @@ public class QueryCircles {
 		int count = 0;
 		int total = 0;
 		for (int i = 0; i < nodes.length; i++) {
-			Iterator<String> circles = qc.getCircles(nodes[i]).iterator();
+			//Iterator<String> circles = qc.getCircles(nodes[i]).iterator();
+			Iterator<Label> circles = qc.getCircleLabels(q.getNode(nodes[i])).iterator();
 			if (circles.hasNext()) count++;
 			while (circles.hasNext()) {
 				circles.next();

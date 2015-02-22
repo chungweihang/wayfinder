@@ -4,6 +4,7 @@ import java.io.PrintStream;
 import java.util.Iterator;
 import java.util.List;
 
+import org.neo4j.graphdb.Label;
 import org.neo4j.graphdb.Node;
 
 import smallworld.data.RelationshipTypes;
@@ -51,8 +52,8 @@ public class QueryPath {
 			if (previous != null) {
 				System.out.println("** circles **");
 				
-				for (Iterator<String> circles = qc.getCircles(n.getId()).iterator(); circles.hasNext(); ) {
-					System.out.println(circles.next());
+				for (Iterator<Label> circles = qc.getCircleLabels(n).iterator(); circles.hasNext(); ) {
+					System.out.println(circles.next().name());
 				}
 			}
 			
