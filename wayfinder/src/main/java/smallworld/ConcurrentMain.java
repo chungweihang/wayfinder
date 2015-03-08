@@ -170,7 +170,7 @@ public class ConcurrentMain implements NavigationCompleteListener {
 	
 		int count = numberOfPairsNavigated.incrementAndGet();
 		if (p != null) {
-			numberOfPairsPathFound.incrementAndGet();
+			int numberOfPathsFound = numberOfPairsPathFound.incrementAndGet();
 			long length = totalPathLength.addAndGet(p.length());
 			//@SuppressWarnings("deprecation")
 			long nodes = totalNumberOfNodesExplored.addAndGet(thread.getNumberOfNodesExplored());
@@ -184,7 +184,7 @@ public class ConcurrentMain implements NavigationCompleteListener {
 			if (now.after(lastUpdated)) {
 				calendar.set(now);
 				//logger.log(Level.INFO, String.format("[ConcurrentMain] PROGRESS %d/%d\tLength: %.4f\tNodes: %.4f\t[%s]", count, numberOfPairsToBeNavigated, ((double)length)/count, ((double)nodes)/count, new Date().toString()));
-				System.out.printf("[ConcurrentMain] PROGRESS %d/%d\tLength: %.4f\tNodes: %.4f\t[%s]\n", count, numberOfPairsToBeNavigated, ((double)length)/count, ((double)nodes)/count, new Date().toString());
+				System.out.printf("[ConcurrentMain] PROGRESS %d/%d\tLength: %.4f\tNodes: %.4f\t[%s]\n", count, numberOfPairsToBeNavigated, ((double)length)/numberOfPathsFound, ((double)nodes)/numberOfPathsFound, new Date().toString());
 			}
 		}
 		
