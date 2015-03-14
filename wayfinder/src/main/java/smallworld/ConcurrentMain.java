@@ -58,6 +58,7 @@ import smallworld.navigation.feature.FeatureBuilder;
 import smallworld.util.LibSVMUtils;
 import smallworld.util.Pair;
 import weka.classifiers.Classifier;
+import weka.classifiers.bayes.NaiveBayes;
 import weka.classifiers.functions.Logistic;
 import weka.classifiers.trees.RandomForest;
 import weka.core.converters.ArffSaver;
@@ -334,6 +335,11 @@ public class ConcurrentMain implements NavigationCompleteListener {
 				.addFeature(FeatureBuilder.getCommonCirclesWithParent(args[NEO4J_PATH]))
 				.addFeature(FeatureBuilder.getCommonCirclesWithTarget(args[NEO4J_PATH]))
 				.addFeature(FeatureBuilder.getCommonCirclesBetweenParentTarget(args[NEO4J_PATH]))
+				/*
+				.addFeature(FeatureBuilder.hasCommonCirclesWithParent(args[NEO4J_PATH]))
+				.addFeature(FeatureBuilder.hasCommonCirclesWithTarget(args[NEO4J_PATH]))
+				.addFeature(FeatureBuilder.hasCommonCirclesBetweenParentTarget(args[NEO4J_PATH]))
+				*/
 				.addFeature(FeatureBuilder.getMinCommonCircleWithTarget(args[NEO4J_PATH]))
 				.addFeature(FeatureBuilder.getMaxCommonCircleWithTarget(args[NEO4J_PATH]))
 				.addFeature(FeatureBuilder.getEndNodeDegreeFeature(args[NEO4J_PATH], type, dir))
@@ -354,6 +360,18 @@ public class ConcurrentMain implements NavigationCompleteListener {
 				//Classifier classifier = new J48(); String log = "j48";
 				Classifier classifier = new Logistic(); //String log = "logistic";
 				//Classifier classifier = new SimpleLogistic(); String log = "simplelogistic";
+						
+				try {
+					evaluator = new ClassificationEvaluator(
+									classifier, features, args[1] + ".arff");
+					
+					((ClassificationEvaluator) evaluator).printParameters();
+				} catch (Exception e) {
+					e.printStackTrace();
+				}
+				
+			} else if (args[EVALUATOR].equals("NaiveBayes")) {
+				Classifier classifier = new NaiveBayes();
 						
 				try {
 					evaluator = new ClassificationEvaluator(

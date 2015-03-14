@@ -36,6 +36,9 @@ import weka.core.Instances;
  */
 public class FeatureBuilder {
 	
+	private static final Double ONE = Double.valueOf(1);
+	private static final Double ZERO = Double.valueOf(0);
+	
 	// Control whether features get scaled or not
 	private static boolean scaling = false;
 	
@@ -204,6 +207,21 @@ public class FeatureBuilder {
 		};
 	}
 	
+	public static Feature<Double> hasCommonCirclesWithTarget(String dataset) {
+		return new Feature<Double>() {
+			@Override
+			public Double getFeature(Path path, Node target) {
+				int count = QueryCircles.getInstance().getCommonCircleLabels(path.endNode(), target).size();
+				return count > 0 ? ONE : ZERO; 
+			}
+			
+			@Override
+			public String getName() {
+				return "BinaryCommonCirclesWithTarget";
+			}
+		};
+	}
+	
 	public static Feature<Double> getCommonCirclesWithTarget(String dataset) {
 		final double max;
 		if (dataset.equals("facebook")) max = 20d;
@@ -229,6 +247,22 @@ public class FeatureBuilder {
 		};
 	}
 
+	public static Feature<Double> hasCommonCirclesWithParent(String dataset) {
+		return new Feature<Double>() {
+			@Override
+			public Double getFeature(Path path, Node target) {
+				int count = QueryCircles.getInstance().getCommonCircleLabels(
+						path.lastRelationship().getOtherNode(path.endNode()), path.endNode()).size();
+				return count > 0 ? ONE : ZERO; 
+			}
+			
+			@Override
+			public String getName() {
+				return "BinaryCommonCirclesWithParent";
+			}
+		};
+	}
+	
 	public static Feature<Double> getCommonCirclesWithParent(String dataset) {
 		final double max;
 		if (dataset.equals("facebook")) max = 20d;
@@ -251,6 +285,22 @@ public class FeatureBuilder {
 			@Override
 			public String getName() {
 				return "CommonCirclesWithParent";
+			}
+		};
+	}
+	
+	public static Feature<Double> hasCommonCirclesBetweenParentTarget(String dataset) {
+		return new Feature<Double>() {
+			@Override
+			public Double getFeature(Path path, Node target) {
+				int count = QueryCircles.getInstance().getCommonCircleLabels(
+						path.lastRelationship().getOtherNode(path.endNode()), target).size();
+				return count > 0 ? ONE : ZERO; 
+			}
+			
+			@Override
+			public String getName() {
+				return "BinaryCommonCirclesBetweenParentTarget";
 			}
 		};
 	}
