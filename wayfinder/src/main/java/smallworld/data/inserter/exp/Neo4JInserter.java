@@ -23,7 +23,7 @@ public class Neo4JInserter {
 	static final String CIRCLE_NAME = "circleName";
 	
 	final BatchInserter inserter;
-	boolean isDirected = false;
+	boolean isDirected;
 	final Multimap<Long, Long> friendEdges;
 	final Multimap<Long, Long> circleEdges;
 	final Map<Object, Long> nodeToIds;
@@ -34,6 +34,10 @@ public class Neo4JInserter {
 	long totalCircleSize = 0;
 	
 	public Neo4JInserter(String path) {
+		this(path, false);
+	}
+	
+	public Neo4JInserter(String path, boolean isDirected) {
 		// config
 		Map<String, String> config = new HashMap<>();
         config.put("neostore.nodestore.db.mapped_memory", "90M");
@@ -42,6 +46,8 @@ public class Neo4JInserter {
         config.put("neostore.propertystore.db.strings.mapped_memory", "100M");
         config.put("neostore.propertystore.db.arrays.mapped_memory", "0M");
         inserter = BatchInserters.inserter(path, config);
+        
+        this.isDirected = isDirected;
         
         friendEdges = HashMultimap.create();
         circleEdges = HashMultimap.create();
