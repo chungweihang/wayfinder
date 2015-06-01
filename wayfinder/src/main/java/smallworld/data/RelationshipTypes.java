@@ -5,7 +5,8 @@ import org.neo4j.graphdb.RelationshipType;
 
 public enum RelationshipTypes {
 	FRIEND(DynamicRelationshipType.withName("FRIEND")),
-	//CIRCLE(DynamicRelationshipType.withName("CIRCLE")),
+	CIRCLE(DynamicRelationshipType.withName("CIRCLE")),
+	@Deprecated
 	KNOWS(DynamicRelationshipType.withName("KNOWS")),
 	COAUTHOR(DynamicRelationshipType.withName("COAUTHOR"));
 	
