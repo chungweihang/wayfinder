@@ -63,10 +63,18 @@ public class Neo4JInserter {
 	}
 	
 	public void addCircle(String circleName) {
+		addCircle(circleName, emptyMap());
+	}
+	
+	public void addCircle(String circleName, Map<String, Object> properties) {
 		if (!circleToIds.containsKey(circleName)) {
-			long id = inserter.createNode(null);
+			long id = inserter.createNode(properties);
 			circleToIds.put(circleName, id);
-		} 
+		} else {
+			long id = circleToIds.get(circleName);
+			properties.putAll(inserter.getNodeProperties(id));
+			inserter.setNodeProperties(id, properties);
+		}
 	}
 	
 	public void setCircle(String circleName, Object node) {
