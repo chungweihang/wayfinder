@@ -84,50 +84,6 @@ public class Query {
 		print(cypherQuery("START n=node(*) RETURN count(*)"));
 	}
 	
-	public void clusteringCoefficient() {
-		cypherQuery( 
-        		"START a = node(*) " +
-        		"MATCH (a)-[:FRIEND]-(b) " +
-        		"WITH a, count(distinct b) as n " +
-        		"MATCH (a)-[:FRIEND]-()-[r:FRIEND]-()-[:FRIEND]-(a) " +
-        		"WITH toFloat(count(distinct r)) * 2 / (n * (n-1)) AS cc, a " +
-        		"SET a.clustering_coefficient = cc");
-	}
-	
-	public Double clusteringCoefficient(long ego) {
-		// clustering coefficient 
-        // r / (n! / (2!(n-2)!))
-		ExecutionResult result = cypherQuery( 
-        		"START a = node(" + ego + ") " +
-        		"MATCH (a)-[:FRIEND]-(b) " +
-        		"WITH a, count(distinct b) as n " +
-        		"MATCH (a)-[:FRIEND]-()-[r:FRIEND]-()-[:FRIEND]-(a) " +
-        		"WITH toFloat(count(distinct r)) * 2 / (n * (n-1)) AS cc, a " +
-				"SET a.clustering_coefficient = cc " +
-        		"RETURN cc;");
-		
-		for (Iterator<Double> it = result.columnAs("cc"); it.hasNext(); ) {
-			Double cc = it.next();
-			if (cc != null) return cc;
-		}
-		
-		return null;
-	}
-	
-	public void betweennessCentrality() {
-		cypherQuery(
-				"START n=node(*) " + 
-				"WITH collect(n) AS all_nodes " +
-				"START src=node(*), det=node(*) " + 
-				"MATCH p = allShortestPaths(src-[*]-det) " +
-				"WHERE src <> det AND length(p) > 1 " +
-				"WITH NODES(p) AS nodes, all_nodes " +
-				"WITH COLLECT(nodes) AS paths, all_nodes " +
-				"WITH reduce(res=[], x IN all_nodes | res + [ {node:x, bc:length(filter(p IN paths WHERE x in tail(p) AND x <> last(p)))}]) AS bc_pairs " +
-				"FOREACH (pair IN bc_pairs | SET pair.node.betweenness_centrality=pair.bc)"
-				);
-		
-	}
 	
 	public void numberOfRelationships() {
 		print(cypherQuery( 
@@ -462,9 +418,6 @@ public class Query {
 		
 		//q.numberOfNode();
 		//q.numberOfRelationships();
-		System.out.println(q.clusteringCoefficient(5));
-		//q.betweennessCentrality();
-		//q.clusteringCoefficient();
 		
 		// System.out.println(q.getRelationshipsFrom(809864, "FRIEND", Direction.OUTGOING).size());
 		

@@ -1,5 +1,9 @@
 package smallworld.data.query;
 
+import java.util.Iterator;
+
+import org.neo4j.cypher.javacompat.ExecutionResult;
+
 /**
  * 
  * Calculate clustering coefficient for each node in a Neo4J graph.
@@ -21,9 +25,39 @@ public class ClusteringCoefficient {
 		int count = 0;
 		for (Long ego : q.allNodes()) {
 			if (++ count % 100 == 0) System.out.println(count);
-			q.clusteringCoefficient(ego);
+			clusteringCoefficient(q, ego);
 		}
 		
 		q.shutdown();
+	}
+	
+	public static void clusteringCoefficient(Query query) {
+		query.cypherQuery( 
+        		"START a = node(*) " +
+        		"MATCH (a)-[:FRIEND]-(b) " +
+        		"WITH a, count(distinct b) as n " +
+        		"MATCH (a)-[:FRIEND]-()-[r:FRIEND]-()-[:FRIEND]-(a) " +
+        		"WITH toFloat(count(distinct r)) * 2 / (n * (n-1)) AS cc, a " +
+        		"SET a.clustering_coefficient = cc");
+	}
+	
+	public static Double clusteringCoefficient(Query query, long ego) {
+		// clustering coefficient 
+        // r / (n! / (2!(n-2)!))
+		ExecutionResult result = query.cypherQuery( 
+        		"START a = node(" + ego + ") " +
+        		"MATCH (a)-[:FRIEND]-(b) " +
+        		"WITH a, count(distinct b) as n " +
+        		"MATCH (a)-[:FRIEND]-()-[r:FRIEND]-()-[:FRIEND]-(a) " +
+        		"WITH toFloat(count(distinct r)) * 2 / (n * (n-1)) AS cc, a " +
+				"SET a.clustering_coefficient = cc " +
+        		"RETURN cc;");
+		
+		for (Iterator<Double> it = result.columnAs("cc"); it.hasNext(); ) {
+			Double cc = it.next();
+			if (cc != null) return cc;
+		}
+		
+		return null;
 	}
 }
