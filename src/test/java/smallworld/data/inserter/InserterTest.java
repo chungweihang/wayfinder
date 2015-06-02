@@ -29,8 +29,8 @@ public class InserterTest {
 	@Test
 	public void test1() {
 		Neo4JInserter inserter = new Neo4JInserter(tempFolder.getRoot().getAbsolutePath());
-		inserter.addNode(1);
-		inserter.addNode(2);
+		inserter.addPerson(1);
+		inserter.addPerson(2);
 		inserter.addFriend(1, 2);
 		inserter.addFriend(2, 1);
 		inserter.addCircle("circle1");

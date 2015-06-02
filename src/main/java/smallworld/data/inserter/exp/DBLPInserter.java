@@ -130,9 +130,9 @@ public class DBLPInserter extends DefaultHandler {
     public static void main(String[] args) throws SAXException, IOException, ParserConfigurationException {
     	String neo4JPath = "neo4j/dblp-exp";
     	DBLPInserter handler = new DBLPInserter(neo4JPath);
-    	final long size = new File("data/dblp-small.xml").length();
+    	final long size = new File("data/dblp.xml").length();
     	//SAXParserFactory.newInstance().newSAXParser().parse(new File("data/dblp.xml"), handler);
-    	SAXParserFactory.newInstance().newSAXParser().parse(new FilterInputStream(new FileInputStream("data/dblp-small.xml")) {
+    	SAXParserFactory.newInstance().newSAXParser().parse(new FilterInputStream(new FileInputStream("data/dblp.xml")) {
     		double progress = 0d;
     		double current = 0d;
     		@Override
