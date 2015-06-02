@@ -38,6 +38,7 @@ import com.google.common.collect.Multimap;
 public class Neo4JInserter {
 
 	private static final Logger logger = LogManager.getLogger();
+	private static final String IDENTIFIER = "dataset-identifier";
 
 	final BatchInserter inserter;
 
@@ -159,11 +160,11 @@ public class Neo4JInserter {
 	}
 
 	// create a circle with features
-	// the features contain name of the circle, i.e., "name" : circleName
+	// the features contain name of the circle, i.e., IDENTIFIER : circleName
 	public void addCircle(String circleName, Map<String, Object> features) {
 		if (!circleExists(circleName)) {
-			features.put("name", circleName); // add circleName as property
-												// "name"
+			features.put(IDENTIFIER, circleName); // add circleName as property
+												// IDENTIFIER
 			long id = inserter.createNode(features);
 			circleToIds.put(circleName, id);
 		} else {
@@ -202,10 +203,10 @@ public class Neo4JInserter {
 	}
 
 	// create a person with features
-	// the features contain name of the circle, i.e., "name" : circleName
+	// the features contain name of the circle, i.e., IDENTIFIER : circleName
 	public void addPerson(Object person, Map<String, Object> features) {
 		if (!personExists(person)) {
-			features.put("name", person);
+			features.put(IDENTIFIER, person);
 			long id = inserter.createNode(features);
 			personToIds.put(person, id);
 		} else {
