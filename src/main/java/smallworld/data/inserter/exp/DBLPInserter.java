@@ -84,7 +84,7 @@ public class DBLPInserter extends DefaultHandler {
     	if ((article || inproceedings) && name.equals("author")) {
     		// retrieve name of each author
     		String author = content.toString();
-    		inserter.addNode(author);
+    		inserter.addPerson(author);
     		coauthors.add(author);
         	
         	// connect author to all the previous found author of the publication

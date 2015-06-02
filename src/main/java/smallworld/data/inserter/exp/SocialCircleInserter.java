@@ -5,7 +5,6 @@ import java.io.File;
 import java.io.FileFilter;
 import java.io.FileReader;
 import java.io.IOException;
-import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -13,8 +12,6 @@ import java.util.Map;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-
-import smallworld.data.RelationshipTypes;
 
 /**
  * Batch insert data to neo4j
@@ -28,10 +25,10 @@ public class SocialCircleInserter {
 
 	final Neo4JInserter inserter;
 	
-	protected String neo4jPath, dataPath;
+	protected final String dataPath;
 	
-	public SocialCircleInserter(String neo4jPath, String dataPath) {
-		inserter = new Neo4JInserter(neo4jPath);
+	public SocialCircleInserter(final String neo4jPath, final String dataPath, final boolean isDirected) {
+		inserter = new Neo4JInserter(neo4jPath, isDirected);
 		this.dataPath = dataPath;
 	}
 	
@@ -140,7 +137,7 @@ public class SocialCircleInserter {
 			// Set ego features
 			Map<String, Object> properties = readEgoFeatures(egoString + ".egofeat", features);
 			// Insert ego
-			inserter.addNode(ego, properties);
+			inserter.addPerson(ego, properties);
 			
 			
 			// ==== EDGES (FRIEND) ====
@@ -152,8 +149,8 @@ public class SocialCircleInserter {
 				String src = tokens[0];
 				String det = tokens[1];
 				
-				inserter.addNode(src);
-				inserter.addNode(det);
+				inserter.addPerson(src);
+				inserter.addPerson(det);
 				
 				// ego is assumed to connect to both src and det
 				inserter.addFriend(ego, src);
@@ -179,7 +176,7 @@ public class SocialCircleInserter {
 					}
 				}
 				
-				inserter.addNode(target, props);
+				inserter.addPerson(target, props);
 				inserter.addFriend(ego, target);
 			}
 			
@@ -200,7 +197,7 @@ public class SocialCircleInserter {
 				for (int i = 1; i < tokens.length; i++) {
 					String target = tokens[i];
 					
-					inserter.addNode(target);
+					inserter.addPerson(target);
 					inserter.addFriend(ego, target);
 					inserter.setCircle(circleName, target);
 				}
@@ -215,10 +212,6 @@ public class SocialCircleInserter {
 			.append("BatchInsert faceboook|gplus|twitter").toString());
 	}
 	
-	private void setDirected(boolean isDirected) {
-		inserter.isDirected = isDirected;
-	}
-
 	/**
 	 * @param args
 	 * @throws IOException 
@@ -231,15 +224,17 @@ public class SocialCircleInserter {
 		}
 		
 		String dataset = args[0];
+		String neo4JPath = "neo4j/" + dataset + "-exp";
+		String dataPath = "data/" + dataset;
 		
-		SocialCircleInserter insert = new SocialCircleInserter("neo4j/" + dataset + "-exp", "data/" + dataset);
+		SocialCircleInserter insert = null; 
 		
 		if (dataset.equals("facebook")) {
-			insert.setDirected(false);
+			insert = new SocialCircleInserter(neo4JPath, dataPath, false);
 		} else if (dataset.equals("gplus")) {
-			insert.setDirected(true); 
+			insert = new SocialCircleInserter(neo4JPath, dataPath, true);
 		} else if (dataset.equals("twitter")) {
-			insert.setDirected(true); 
+			insert = new SocialCircleInserter(neo4JPath, dataPath, true);
 		} else {
 			usage();
 			System.exit(0);
