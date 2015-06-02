@@ -68,6 +68,24 @@ public class Neo4JInserter {
 		
 	}
 	
+	public boolean isFriend(Object from, Object to) {
+		if (nodeToIds.containsKey(from) && nodeToIds.containsKey(to))
+			return relationshipExists(RelationshipTypes.FRIEND.type(), nodeToIds.get(from), nodeToIds.get(to));
+		return false;
+	}
+	
+	public boolean nodeExists(Object node) {
+		return nodeToIds.containsKey(node);
+	}
+	
+	public boolean hasCirlce(Object node, String circleName) {
+		if (nodeToIds.containsKey(node) && circleToIds.containsKey(circleName)) {
+			return circleEdges.containsEntry(nodeToIds.get(node), circleToIds.get(circleName));
+		}
+		
+		return false;
+	}
+	
 	public void addCircle(String circleName) {
 		addCircle(circleName, emptyMap());
 	}

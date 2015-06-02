@@ -22,7 +22,7 @@ import smallworld.data.RelationshipTypes;
  * @author chang
  *
  */
-public class SocialCircleBatchInsert {
+public class SocialCircleInserter {
 	
 	private static final Logger logger = LogManager.getLogger();
 
@@ -30,7 +30,7 @@ public class SocialCircleBatchInsert {
 	
 	protected String neo4jPath, dataPath;
 	
-	public SocialCircleBatchInsert(String neo4jPath, String dataPath) {
+	public SocialCircleInserter(String neo4jPath, String dataPath) {
 		inserter = new Neo4JInserter(neo4jPath);
 		this.dataPath = dataPath;
 	}
@@ -232,7 +232,7 @@ public class SocialCircleBatchInsert {
 		
 		String dataset = args[0];
 		
-		SocialCircleBatchInsert insert = new SocialCircleBatchInsert("neo4j/" + dataset + "-exp", "data/" + dataset);
+		SocialCircleInserter insert = new SocialCircleInserter("neo4j/" + dataset + "-exp", "data/" + dataset);
 		
 		if (dataset.equals("facebook")) {
 			insert.setDirected(false);

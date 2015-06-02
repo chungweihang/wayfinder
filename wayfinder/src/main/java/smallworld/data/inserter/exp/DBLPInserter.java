@@ -1,7 +1,10 @@
 package smallworld.data.inserter.exp;
 
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.FilterInputStream;
 import java.io.IOException;
+import java.text.NumberFormat;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -22,7 +25,7 @@ import org.xml.sax.helpers.DefaultHandler;
  * @author chang
  *
  */
-public class DBLPHandler extends DefaultHandler {
+public class DBLPInserter extends DefaultHandler {
 	
 	private static final Logger logger = LogManager.getLogger();
 
@@ -45,28 +48,20 @@ public class DBLPHandler extends DefaultHandler {
     
     private boolean article = false;
     
-    //private BatchInserter inserter;
-    private Neo4JInserter inserter;
-    //private Map<String, Long> authorMap;
-    //private Multimap<Long, Long> edgeMap;
+    Neo4JInserter inserter;
     private int numberOfPapers = 0;
     
-    //private Multimap<String, Long> circleToPeople;
     private long totalSizeOfCircles = 0;
     
-    public DBLPHandler(String neo4jPath) {
+    public DBLPInserter(String neo4jPath) {
         this.content = new StringBuilder();
         this.coauthors = new ArrayList<String>();
- 
         this.inserter = new Neo4JInserter(neo4jPath);
-        //this.authorMap = new HashMap<String, Long>();
-        //this.edgeMap = HashMultimap.create();
-        
-        //this.circleToPeople = ArrayListMultimap.create();
     }
     
     void insert() throws IOException {
     	inserter.insert();
+    	logger.info("Number of papers: " + numberOfPapers);
     }
 
     // characters can be called multiple times per element so aggregate the content in a StringBuilder
@@ -134,8 +129,27 @@ public class DBLPHandler extends DefaultHandler {
     
     public static void main(String[] args) throws SAXException, IOException, ParserConfigurationException {
     	String neo4JPath = "neo4j/dblp-exp";
-    	DBLPHandler handler = new DBLPHandler(neo4JPath);
-    	SAXParserFactory.newInstance().newSAXParser().parse(new File("data/dblp.xml"), handler);
+    	DBLPInserter handler = new DBLPInserter(neo4JPath);
+    	final long size = new File("data/dblp-small.xml").length();
+    	//SAXParserFactory.newInstance().newSAXParser().parse(new File("data/dblp.xml"), handler);
+    	SAXParserFactory.newInstance().newSAXParser().parse(new FilterInputStream(new FileInputStream("data/dblp-small.xml")) {
+    		double progress = 0d;
+    		double current = 0d;
+    		@Override
+    		public int read(byte[] buffer, int offset, int count) throws IOException {
+    			int c = super.read(buffer, offset, count);
+    			progress += c;
+    			double percentage = progress / size / 100;
+    			if (percentage - current > 0.01d) {
+    				logger.info(String.format("Progress=%.2f%%", percentage));
+    				current = percentage;
+    			}
+    			
+    			//System.out.println(progress + " / " + size);
+    		    return c;
+    		}
+    	}, handler);
+    	
     	handler.insert();
     }
     
