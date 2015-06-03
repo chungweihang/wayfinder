@@ -4,6 +4,7 @@ import org.neo4j.graphalgo.impl.util.PathImpl;
 import org.neo4j.graphdb.Node;
 import org.neo4j.graphdb.Path;
 import org.neo4j.graphdb.Relationship;
+import org.tartarus.snowball.ext.englishStemmer;
 
 import weka.core.Instances;
 import weka.core.converters.ConverterUtils.DataSource;
@@ -38,6 +39,13 @@ public class Utils {
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
+	}
+	
+	private static final englishStemmer stemmer = new englishStemmer();
+	public static String stem(String text) {
+		stemmer.setCurrent(text);
+		stemmer.stem();
+		return stemmer.getCurrent();
 	}
 	
 	/**
