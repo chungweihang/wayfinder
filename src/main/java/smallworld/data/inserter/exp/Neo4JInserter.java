@@ -7,6 +7,8 @@ import java.util.Map;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.neo4j.graphdb.DynamicLabel;
+import org.neo4j.graphdb.Label;
 import org.neo4j.graphdb.RelationshipType;
 import org.neo4j.kernel.impl.util.FileUtils;
 import org.neo4j.unsafe.batchinsert.BatchInserter;
@@ -30,7 +32,8 @@ import com.google.common.collect.Multimap;
  * connect to others via "FRIED" relationships, whereas people connect to
  * circles via "CIRCLE" relationships.
  * 
- * Both people and circles can have features.
+ * Both people and circles can have features. People nodes will be labeled as
+ * "Person", and circle nodes will be labeled as "Circle."
  * 
  * @author chang
  *
@@ -38,7 +41,9 @@ import com.google.common.collect.Multimap;
 public class Neo4JInserter {
 
 	private static final Logger logger = LogManager.getLogger();
-	private static final String IDENTIFIER = "dataset-identifier";
+	private static final String IDENTIFIER = "DATASET_IDENTIFIER";
+	static final Label PERSON_LABEL = DynamicLabel.label("Person");
+	static final Label CIRCLE_LABEL = DynamicLabel.label("Circle");
 
 	final BatchInserter inserter;
 
@@ -160,12 +165,13 @@ public class Neo4JInserter {
 	}
 
 	// create a circle with features
+	// the created circle has label: Circle
 	// the features contain name of the circle, i.e., IDENTIFIER : circleName
 	public void addCircle(String circleName, Map<String, Object> features) {
 		if (!circleExists(circleName)) {
 			features.put(IDENTIFIER, circleName); // add circleName as property
-												// IDENTIFIER
-			long id = inserter.createNode(features);
+													// IDENTIFIER
+			long id = inserter.createNode(features, CIRCLE_LABEL);
 			circleToIds.put(circleName, id);
 		} else {
 			long id = circleToIds.get(circleName);
@@ -203,11 +209,12 @@ public class Neo4JInserter {
 	}
 
 	// create a person with features
-	// the features contain name of the circle, i.e., IDENTIFIER : circleName
+	// the created node has label: Person
+	// the features contain name of the circle, i.e., IDENTIFIER : person
 	public void addPerson(Object person, Map<String, Object> features) {
 		if (!personExists(person)) {
 			features.put(IDENTIFIER, person);
-			long id = inserter.createNode(features);
+			long id = inserter.createNode(features, PERSON_LABEL);
 			personToIds.put(person, id);
 		} else {
 			long id = personToIds.get(person);
