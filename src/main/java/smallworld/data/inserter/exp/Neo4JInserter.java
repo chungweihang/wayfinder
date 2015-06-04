@@ -38,13 +38,11 @@ import com.google.common.collect.Multimap;
  * @author chang
  *
  */
-public class Neo4JInserter {
+public class Neo4JInserter implements GraphInserter {
 
 	private static final Logger logger = LogManager.getLogger();
 	private static final String IDENTIFIER = "DATASET_IDENTIFIER";
-	static final Label PERSON_LABEL = DynamicLabel.label("Person");
-	static final Label CIRCLE_LABEL = DynamicLabel.label("Circle");
-
+	
 	final BatchInserter inserter;
 
 	// indicate if friendship is directional or not (bidirectional)
@@ -109,7 +107,7 @@ public class Neo4JInserter {
 	 * 
 	 * @throws IOException
 	 */
-	void insert() throws IOException {
+	public void insert() throws IOException {
 		delete(inserter.getStoreDir());
 		inserter.shutdown();
 
@@ -124,13 +122,10 @@ public class Neo4JInserter {
 
 	}
 
-	/**
-	 * Check if a person is a friend of another.
-	 * 
-	 * @param from
-	 * @param to
-	 * @return
+	/* (non-Javadoc)
+	 * @see smallworld.data.inserter.exp.GraphInserter#isFriend(java.lang.Object, java.lang.Object)
 	 */
+	@Override
 	public boolean isFriend(Object from, Object to) {
 		if (personExists(from) && personExists(to))
 			return relationshipExists(RelationshipTypes.FRIEND.type(),
@@ -139,17 +134,29 @@ public class Neo4JInserter {
 	}
 
 	// check if a person exists
+	/* (non-Javadoc)
+	 * @see smallworld.data.inserter.exp.GraphInserter#personExists(java.lang.Object)
+	 */
+	@Override
 	public boolean personExists(Object person) {
 		return personToIds.containsKey(person);
 	}
 
 	// check if a circle exists
+	/* (non-Javadoc)
+	 * @see smallworld.data.inserter.exp.GraphInserter#circleExists(java.lang.String)
+	 */
+	@Override
 	public boolean circleExists(String circleName) {
 		return circleToIds.containsKey(circleName);
 	}
 
 	// check if a person belongs to a circle
 	// if person and/or circle do not exist, return false
+	/* (non-Javadoc)
+	 * @see smallworld.data.inserter.exp.GraphInserter#hasCirlce(java.lang.Object, java.lang.String)
+	 */
+	@Override
 	public boolean hasCirlce(Object person, String circleName) {
 		if (personExists(person) && circleExists(circleName)) {
 			return circleEdges.containsEntry(personToIds.get(person),
@@ -160,6 +167,10 @@ public class Neo4JInserter {
 	}
 
 	// create a circle
+	/* (non-Javadoc)
+	 * @see smallworld.data.inserter.exp.GraphInserter#addCircle(java.lang.String)
+	 */
+	@Override
 	public void addCircle(String circleName) {
 		addCircle(circleName, emptyMap());
 	}
@@ -167,6 +178,10 @@ public class Neo4JInserter {
 	// create a circle with features
 	// the created circle has label: Circle
 	// the features contain name of the circle, i.e., IDENTIFIER : circleName
+	/* (non-Javadoc)
+	 * @see smallworld.data.inserter.exp.GraphInserter#addCircle(java.lang.String, java.util.Map)
+	 */
+	@Override
 	public void addCircle(String circleName, Map<String, Object> features) {
 		if (!circleExists(circleName)) {
 			features.put(IDENTIFIER, circleName); // add circleName as property
@@ -182,6 +197,10 @@ public class Neo4JInserter {
 
 	// add a person to a circle
 	// throw exception if either circle or person does not exist
+	/* (non-Javadoc)
+	 * @see smallworld.data.inserter.exp.GraphInserter#setCircle(java.lang.String, java.lang.Object)
+	 */
+	@Override
 	public void setCircle(String circleName, Object person) {
 		if (!personExists(person)) {
 			throw new IllegalArgumentException("Node: " + person
@@ -204,6 +223,10 @@ public class Neo4JInserter {
 	}
 
 	// create a person
+	/* (non-Javadoc)
+	 * @see smallworld.data.inserter.exp.GraphInserter#addPerson(java.lang.Object)
+	 */
+	@Override
 	public void addPerson(Object person) {
 		addPerson(person, emptyMap());
 	}
@@ -211,6 +234,10 @@ public class Neo4JInserter {
 	// create a person with features
 	// the created node has label: Person
 	// the features contain name of the circle, i.e., IDENTIFIER : person
+	/* (non-Javadoc)
+	 * @see smallworld.data.inserter.exp.GraphInserter#addPerson(java.lang.Object, java.util.Map)
+	 */
+	@Override
 	public void addPerson(Object person, Map<String, Object> features) {
 		if (!personExists(person)) {
 			features.put(IDENTIFIER, person);
@@ -246,6 +273,10 @@ public class Neo4JInserter {
 	 * Make a person a friend of another. It does nothing if one or both of
 	 * people do not exist.
 	 */
+	/* (non-Javadoc)
+	 * @see smallworld.data.inserter.exp.GraphInserter#addFriend(java.lang.Object, java.lang.Object)
+	 */
+	@Override
 	public void addFriend(Object fromNode, Object toNode) {
 		if (!personExists(fromNode)) {
 			throw new IllegalArgumentException("Node: " + fromNode

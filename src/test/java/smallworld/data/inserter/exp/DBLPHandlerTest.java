@@ -22,7 +22,7 @@ public class DBLPHandlerTest {
 	public void test() throws FileNotFoundException, SAXException, IOException, ParserConfigurationException {
 			String neo4JPath = tempFolder.getRoot().getAbsolutePath();
 			String xml = "/dblp-small.xml";
-			DBLPInserter handler = new DBLPInserter(neo4JPath);
+			DBLPInserter handler = new DBLPInserter(new Neo4JInserter(neo4JPath));
 	    	SAXParserFactory.newInstance().newSAXParser().parse(getClass().getResourceAsStream(xml), handler);
 	    	
 	    	Assert.assertTrue(handler.inserter.isFriend("Gayane Grigoryan", "Oliver Gronz"));

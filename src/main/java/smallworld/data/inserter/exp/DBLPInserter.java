@@ -4,7 +4,6 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FilterInputStream;
 import java.io.IOException;
-import java.text.NumberFormat;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -48,15 +47,15 @@ public class DBLPInserter extends DefaultHandler {
     
     private boolean article = false;
     
-    Neo4JInserter inserter;
+    GraphInserter inserter;
     private int numberOfPapers = 0;
     
     private long totalSizeOfCircles = 0;
     
-    public DBLPInserter(String neo4jPath) {
+    public DBLPInserter(GraphInserter inserter) {
         this.content = new StringBuilder();
         this.coauthors = new ArrayList<String>();
-        this.inserter = new Neo4JInserter(neo4jPath);
+        this.inserter = inserter;
     }
     
     void insert() throws IOException {
@@ -95,20 +94,30 @@ public class DBLPInserter extends DefaultHandler {
         			inserter.addFriend(lastAdded, coauthor);
         		}
         	}
-    	} else if (name.equals("title")) {
+       } 
+    	
+    	if ((article || inproceedings) && name.equals("title")) {
     		title = content.toString();
-        } else if (inproceedings && name.equals("booktitle")) {
+    	} 
+    	
+    	if (inproceedings && name.equals("booktitle")) {
         	// retrieve conference name as the publication
         	publication = content.toString();
-        } else if (article && name.equals("journal")) {
+        } 
+    	
+    	if (article && name.equals("journal")) {
         	// retrieve journal name as the publication
         	publication = content.toString();
-    	} else if ((article || inproceedings) && name.equals("year")) {
+        } 
+    	
+    	if ((article || inproceedings) && name.equals("year")) {
     		// retrieve year of the publication
         	year = content.toString();
-        } else if (name.equals("inproceedings") || name.equals("article")) {
+        }
+    	
+    	if (name.equals("inproceedings") || name.equals("article")) {
         	// add journal and journal:year as each author's social circle
-        	if (publication != null) {
+    		if (publication != null) {
 	        	for (String coauthor : coauthors) {
 	        		inserter.addCircle(publication);
 	        		inserter.setCircle(publication, coauthor);
@@ -129,10 +138,12 @@ public class DBLPInserter extends DefaultHandler {
     
     public static void main(String[] args) throws SAXException, IOException, ParserConfigurationException {
     	String neo4JPath = "neo4j/dblp-exp";
-    	DBLPInserter handler = new DBLPInserter(neo4JPath);
-    	final long size = new File("data/dblp.xml").length();
+    	String dataPath = "data/dblp.xml";
+    	//DBLPInserter handler = new DBLPInserter(new Neo4JInserter(neo4JPath));
+    	DBLPInserter handler = new DBLPInserter(new CSVInserter("csv/dblp", false));
+    	final long size = new File(dataPath).length();
     	//SAXParserFactory.newInstance().newSAXParser().parse(new File("data/dblp.xml"), handler);
-    	SAXParserFactory.newInstance().newSAXParser().parse(new FilterInputStream(new FileInputStream("data/dblp.xml")) {
+    	SAXParserFactory.newInstance().newSAXParser().parse(new FilterInputStream(new FileInputStream(dataPath)) {
     		double progress = 0d;
     		double current = 0d;
     		@Override

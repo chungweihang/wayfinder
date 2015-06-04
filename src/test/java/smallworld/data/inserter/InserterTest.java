@@ -19,6 +19,7 @@ import org.neo4j.unsafe.batchinsert.BatchInserter;
 import org.neo4j.unsafe.batchinsert.BatchInserters;
 
 import smallworld.data.RelationshipTypes;
+import smallworld.data.inserter.exp.GraphInserter;
 import smallworld.data.inserter.exp.Neo4JInserter;
 
 public class InserterTest {
@@ -28,7 +29,7 @@ public class InserterTest {
 	
 	@Test
 	public void test1() {
-		Neo4JInserter inserter = new Neo4JInserter(tempFolder.getRoot().getAbsolutePath());
+		GraphInserter inserter = new Neo4JInserter(tempFolder.getRoot().getAbsolutePath());
 		inserter.addPerson(1);
 		inserter.addPerson(2);
 		inserter.addFriend(1, 2);
