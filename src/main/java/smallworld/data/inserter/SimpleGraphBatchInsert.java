@@ -1,18 +1,17 @@
 package smallworld.data.inserter;
 
-import java.io.File;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 
 import org.neo4j.graphdb.DynamicLabel;
 import org.neo4j.graphdb.Label;
-import org.neo4j.kernel.impl.util.FileUtils;
 import org.neo4j.unsafe.batchinsert.BatchInserter;
 import org.neo4j.unsafe.batchinsert.BatchInserters;
 
 import smallworld.data.RelationshipTypes;
 import smallworld.data.query.Query;
+import smallworld.util.Utils;
 
 public class SimpleGraphBatchInsert {
 
@@ -20,7 +19,7 @@ public class SimpleGraphBatchInsert {
 	}
 
 	public static void insert(String path) throws IOException {
-		FileUtils.deleteRecursively(new File(path));
+		Utils.delete(path);
 
 		// config
 		Map<String, String> config = new HashMap<String, String>();

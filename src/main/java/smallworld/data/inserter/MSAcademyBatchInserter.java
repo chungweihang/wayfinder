@@ -1,6 +1,5 @@
 package smallworld.data.inserter;
 
-import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -8,7 +7,6 @@ import java.util.List;
 import java.util.Map;
 
 import org.neo4j.graphdb.DynamicLabel;
-import org.neo4j.kernel.impl.util.FileUtils;
 import org.neo4j.unsafe.batchinsert.BatchInserter;
 import org.neo4j.unsafe.batchinsert.BatchInserters;
 
@@ -17,6 +15,7 @@ import smallworld.data.inserter.msacademy.MSPaper;
 import smallworld.data.inserter.msacademy.MSPaperAuthor;
 import smallworld.data.inserter.msacademy.MSVenue;
 import smallworld.data.query.Query;
+import smallworld.util.Utils;
 
 import com.google.common.collect.HashMultimap;
 import com.google.common.collect.Multimap;
@@ -153,7 +152,7 @@ public class MSAcademyBatchInserter {
 	}
 	
 	private static void delete(String neo4jPath) throws IOException {
-		FileUtils.deleteRecursively(new File(neo4jPath));	
+		Utils.delete(neo4jPath);	
 	}
 	
 	public static void insert(String neo4jPath, String dataPath) {

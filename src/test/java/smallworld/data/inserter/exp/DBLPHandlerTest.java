@@ -1,6 +1,5 @@
 package smallworld.data.inserter.exp;
 
-import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 
@@ -12,6 +11,8 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.TemporaryFolder;
 import org.xml.sax.SAXException;
+
+import smallworld.data.query.Query;
 
 public class DBLPHandlerTest {
 
@@ -27,8 +28,13 @@ public class DBLPHandlerTest {
 	    	
 	    	Assert.assertTrue(handler.inserter.isFriend("Gayane Grigoryan", "Oliver Gronz"));
 	    	Assert.assertFalse(handler.inserter.isFriend("Oliver Gronz", "Oliver Gronz"));
-	    	Assert.assertTrue(handler.inserter.hasCirlce("E. F. Codd", "IBM Research Report, San Jose, California"));
+	    	//Assert.assertTrue(handler.inserter.hasCirlce("E. F. Codd", "IBM Research Report, San Jose, California"));
 	    	Assert.assertTrue(handler.inserter.hasCirlce("E. F. Codd", "IBM Research Report, San Jose, California:1974"));
 	    	Assert.assertFalse(handler.inserter.hasCirlce("E. F. Codd", "Fight Club"));
+	    	
+	    	handler.insert();
+	    	
+	    	Query q = new Query(neo4JPath);
+	    	System.out.println(q.allNodes().length);
 	}
 }

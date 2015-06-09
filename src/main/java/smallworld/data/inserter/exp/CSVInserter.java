@@ -72,7 +72,11 @@ public class CSVInserter implements GraphInserter {
 			node.properties = features;
 			circles.put(circleName, node);
 		}else {
-			// TODO: combine features;
+			if (null == circles.get(circleName).properties) {
+				circles.get(circleName).properties= features;
+			} else {
+				circles.get(circleName).properties.putAll(features);
+			}
 		}
 	}
 
@@ -97,7 +101,11 @@ public class CSVInserter implements GraphInserter {
 			node.properties = features;
 			people.put(person, node);
 		} else {
-			// TODO: combine features;
+			if (null == people.get(person).properties) {
+				people.get(person).properties= features;
+			} else {
+				people.get(person).properties.putAll(features);
+			}
 		}
 	}
 
@@ -108,6 +116,15 @@ public class CSVInserter implements GraphInserter {
 		}
 	}
 
+	@Override
+	public Map<String, Object> getPersonFeatures(Object person) {
+		if (personExists(person)) {
+			return people.get(person).properties;
+		} else {
+			throw new IllegalArgumentException("Person " + person + " does not exist");
+		}
+	}
+	
 	@Override
 	public void insert() throws IOException {
 		printNodes(people.values(), "people", path + "/people.csv");

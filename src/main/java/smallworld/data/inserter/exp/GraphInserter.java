@@ -57,6 +57,8 @@ public interface GraphInserter {
 	 */
 	public void addFriend(Object fromNode, Object toNode);
 	
+	public Map<String, Object> getPersonFeatures(Object person);
+	
 	public void insert() throws IOException;
 
 }

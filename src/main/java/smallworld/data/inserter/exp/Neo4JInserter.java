@@ -1,20 +1,17 @@
 package smallworld.data.inserter.exp;
 
-import java.io.File;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.neo4j.graphdb.DynamicLabel;
-import org.neo4j.graphdb.Label;
 import org.neo4j.graphdb.RelationshipType;
-import org.neo4j.kernel.impl.util.FileUtils;
 import org.neo4j.unsafe.batchinsert.BatchInserter;
 import org.neo4j.unsafe.batchinsert.BatchInserters;
 
 import smallworld.data.RelationshipTypes;
+import smallworld.util.Utils;
 
 import com.google.common.collect.HashMultimap;
 import com.google.common.collect.Multimap;
@@ -84,6 +81,13 @@ public class Neo4JInserter implements GraphInserter {
 	 *            if the friendship is directional
 	 */
 	public Neo4JInserter(String path, boolean isFriendshipDirected) {
+		
+		try {
+			delete(path);
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+		
 		// Neo4J batchinserter config
 		Map<String, String> config = new HashMap<>();
 		config.put("neostore.nodestore.db.mapped_memory", "90M");
@@ -108,7 +112,6 @@ public class Neo4JInserter implements GraphInserter {
 	 * @throws IOException
 	 */
 	public void insert() throws IOException {
-		delete(inserter.getStoreDir());
 		inserter.shutdown();
 
 		logger.info("Number of nodes: " + personToIds.size());
@@ -190,8 +193,9 @@ public class Neo4JInserter implements GraphInserter {
 			circleToIds.put(circleName, id);
 		} else {
 			long id = circleToIds.get(circleName);
-			features.putAll(inserter.getNodeProperties(id));
-			inserter.setNodeProperties(id, features);
+			Map<String, Object> properties = inserter.getNodeProperties(id);
+			properties.putAll(features);
+			inserter.setNodeProperties(id, properties);
 		}
 	}
 
@@ -245,8 +249,9 @@ public class Neo4JInserter implements GraphInserter {
 			personToIds.put(person, id);
 		} else {
 			long id = personToIds.get(person);
-			features.putAll(inserter.getNodeProperties(id));
-			inserter.setNodeProperties(id, features);
+			Map<String, Object> properties = inserter.getNodeProperties(id);
+			properties.putAll(features);
+			inserter.setNodeProperties(id, properties);
 		}
 	}
 
@@ -320,9 +325,18 @@ public class Neo4JInserter implements GraphInserter {
 		}
 
 	}
+	
+	@Override
+	public Map<String, Object> getPersonFeatures(Object person) {
+		if (personExists(person)) {
+			return inserter.getNodeProperties(personToIds.get(person));
+		} else {
+			throw new IllegalArgumentException("Person " + person + " does not exist");
+		}
+	}
 
 	// utility method for deleting a folder
 	private void delete(String path) throws IOException {
-		FileUtils.deleteRecursively(new File(path));
+		Utils.delete(path);
 	}
 }

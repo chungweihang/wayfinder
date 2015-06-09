@@ -13,7 +13,6 @@ import javax.xml.parsers.SAXParserFactory;
 
 import org.neo4j.graphdb.DynamicLabel;
 import org.neo4j.graphdb.Label;
-import org.neo4j.kernel.impl.util.FileUtils;
 import org.neo4j.unsafe.batchinsert.BatchInserter;
 import org.neo4j.unsafe.batchinsert.BatchInserters;
 import org.xml.sax.Attributes;
@@ -22,6 +21,7 @@ import org.xml.sax.helpers.DefaultHandler;
 
 import smallworld.data.RelationshipTypes;
 import smallworld.data.query.Query;
+import smallworld.util.Utils;
 
 import com.google.common.collect.ArrayListMultimap;
 import com.google.common.collect.HashMultimap;
@@ -199,7 +199,7 @@ public class DBLPHandler extends DefaultHandler {
     }
 
     private static void delete(String neo4jPath) throws IOException {
-    	FileUtils.deleteRecursively(new File(neo4jPath));
+    	Utils.delete(neo4jPath);
     }
     
 }

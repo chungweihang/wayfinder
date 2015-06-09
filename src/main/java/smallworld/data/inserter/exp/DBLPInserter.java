@@ -1,11 +1,10 @@
 package smallworld.data.inserter.exp;
 
 import java.io.File;
-import java.io.FileInputStream;
-import java.io.FilterInputStream;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.parsers.SAXParserFactory;
@@ -119,10 +118,15 @@ public class DBLPInserter extends DefaultHandler {
         	// add journal and journal:year as each author's social circle
     		if (publication != null) {
 	        	for (String coauthor : coauthors) {
-	        		inserter.addCircle(publication);
-	        		inserter.setCircle(publication, coauthor);
+	        		//inserter.addCircle(publication);
+	        		//inserter.setCircle(publication, coauthor);
 	        		inserter.addCircle(publication + ":" + year);
 	        		inserter.setCircle(publication + ":" + year, coauthor);
+	        		
+	        		// update interests of coauthor
+	        		Map<String, Object> properties = inserter.getPersonFeatures(coauthor);
+	        		Interests.addInterests(properties, title);
+	        		inserter.addPerson(coauthor, properties);
 	        	}
         	}
         	
@@ -137,12 +141,13 @@ public class DBLPInserter extends DefaultHandler {
     }
     
     public static void main(String[] args) throws SAXException, IOException, ParserConfigurationException {
-    	String neo4JPath = "neo4j/dblp-exp";
-    	String dataPath = "data/dblp.xml";
-    	//DBLPInserter handler = new DBLPInserter(new Neo4JInserter(neo4JPath));
-    	DBLPInserter handler = new DBLPInserter(new CSVInserter("csv/dblp", false));
+    	String neo4JPath = "neo4j/dblp-small-exp";
+    	String dataPath = "data/dblp-small.xml";
+    	DBLPInserter handler = new DBLPInserter(new Neo4JInserter(neo4JPath));
+    	//DBLPInserter handler = new DBLPInserter(new CSVInserter("csv/dblp-small", false));
     	final long size = new File(dataPath).length();
-    	//SAXParserFactory.newInstance().newSAXParser().parse(new File("data/dblp.xml"), handler);
+    	SAXParserFactory.newInstance().newSAXParser().parse(new File(dataPath), handler);
+    	/*
     	SAXParserFactory.newInstance().newSAXParser().parse(new FilterInputStream(new FileInputStream(dataPath)) {
     		double progress = 0d;
     		double current = 0d;
@@ -160,6 +165,7 @@ public class DBLPInserter extends DefaultHandler {
     		    return c;
     		}
     	}, handler);
+    	*/
     	
     	handler.insert();
     }

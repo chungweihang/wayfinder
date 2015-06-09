@@ -1,7 +1,6 @@
 package smallworld.data.inserter;
 
 import java.io.BufferedReader;
-import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
@@ -12,12 +11,12 @@ import java.util.Set;
 
 import org.neo4j.graphdb.DynamicLabel;
 import org.neo4j.graphdb.Label;
-import org.neo4j.kernel.impl.util.FileUtils;
 import org.neo4j.unsafe.batchinsert.BatchInserter;
 import org.neo4j.unsafe.batchinsert.BatchInserters;
 
 import smallworld.data.RelationshipTypes;
 import smallworld.data.query.Query;
+import smallworld.util.Utils;
 
 /**
  * Batch insert data to neo4j
@@ -48,7 +47,7 @@ public class CommunityBatchInsert {
 	}
 
 	public void delete() throws IOException {
-		FileUtils.deleteRecursively(new File(neo4jPath));
+		Utils.delete(neo4jPath);
 	}
 	
 	/**
