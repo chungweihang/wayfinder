@@ -24,6 +24,7 @@ import smallworld.util.Utils;
  * @author chang
  *
  */
+@Deprecated
 public class CommunityBatchInsert {
 	
 	private boolean directed = false;

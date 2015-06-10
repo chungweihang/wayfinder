@@ -1,7 +1,7 @@
 package smallworld.navigation.evaluator;
 
 import java.util.Iterator;
-import java.util.Properties;
+import java.util.Map;
 
 import org.neo4j.graphdb.Node;
 import org.neo4j.graphdb.Path;
@@ -23,11 +23,11 @@ public class MostCommonFeatureEvaluator implements Evaluator<Integer> {
 	@Override
 	public Integer getCost(Node end, Node target) {
 		int count = 0;
-		Properties properties1 = QueryFeatures.getFeatures(end); //properties1.list(System.out);
-		Properties properties2 = QueryFeatures.getFeatures(target); //properties2.list(System.out);
-		for (Iterator<String> it = properties1.stringPropertyNames().iterator(); it.hasNext(); ) {
+		Map<String, Object> properties1 = QueryFeatures.getFeatures(end); //properties1.list(System.out);
+		Map<String, Object> properties2 = QueryFeatures.getFeatures(target); //properties2.list(System.out);
+		for (Iterator<String> it = properties1.keySet().iterator(); it.hasNext(); ) {
 			String key = it.next();
-			if (properties2.containsKey(key) && properties2.getProperty(key).equals(properties1.getProperty(key)))
+			if (properties2.containsKey(key) && properties2.get(key).equals(properties1.get(key)))
 				count++;
 		}
 		

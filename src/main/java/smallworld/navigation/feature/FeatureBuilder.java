@@ -8,7 +8,6 @@ import org.neo4j.graphdb.Node;
 import org.neo4j.graphdb.Path;
 import org.neo4j.graphdb.RelationshipType;
 
-import smallworld.data.query.Query;
 import smallworld.data.query.QueryCircles;
 import weka.core.Attribute;
 import weka.core.FastVector;
@@ -167,7 +166,7 @@ public class FeatureBuilder {
 		return new Feature<Double>() {
 			@Override
 			public Double getFeature(Path path, Node target) {
-				int count = Query.getDegree(path.endNode(), type, direction);
+				int count = path.endNode().getDegree(type, direction);
 				if (scaling) {
 					if (count > max) System.err.println("EndNodeDegree feature " + count + " exceed max: " + max);
 					return ((double)count) / max;
@@ -191,7 +190,7 @@ public class FeatureBuilder {
 		return new Feature<Double>() {
 			@Override
 			public Double getFeature(Path path, Node target) {
-				int count = Query.getDegree(path.lastRelationship().getOtherNode(path.endNode()), type, direction);
+				int count = path.lastRelationship().getOtherNode(path.endNode()).getDegree(type, direction);
 				if (scaling) {
 					if (count > max) System.err.println("ParentNodeDegree feature " + count + " exceed max: " + max);
 					return ((double)count) / max;
@@ -252,7 +251,7 @@ public class FeatureBuilder {
 		return new Feature<Double>() {
 			@Override
 			public Double getFeature(Path path, Node target) {
-				int count = QueryCircles.getInstance().getCommonCircleLabels(
+				int count = QueryCircles.getInstance().getCommonCircles(
 						path.lastRelationship().getOtherNode(path.endNode()), path.endNode()).size();
 				return count > 0 ? ONE : ZERO; 
 			}
@@ -272,7 +271,7 @@ public class FeatureBuilder {
 		return new Feature<Double>() {
 			@Override
 			public Double getFeature(Path path, Node target) {
-				int count = QueryCircles.getInstance().getCommonCircleLabels(
+				int count = QueryCircles.getInstance().getCommonCircles(
 						path.lastRelationship().getOtherNode(path.endNode()), path.endNode()).size();
 				//int count = QueryCircles.getCommonCircles(path.lastRelationship().getOtherNode(path.endNode()), path.endNode()).size();
 				if (scaling) {
@@ -294,7 +293,7 @@ public class FeatureBuilder {
 		return new Feature<Double>() {
 			@Override
 			public Double getFeature(Path path, Node target) {
-				int count = QueryCircles.getInstance().getCommonCircleLabels(
+				int count = QueryCircles.getInstance().getCommonCircles(
 						path.lastRelationship().getOtherNode(path.endNode()), target).size();
 				return count > 0 ? ONE : ZERO; 
 			}
@@ -316,7 +315,7 @@ public class FeatureBuilder {
 		return new Feature<Double>() {
 			@Override
 			public Double getFeature(Path path, Node target) {
-				int count = QueryCircles.getInstance().getCommonCircleLabels(
+				int count = QueryCircles.getInstance().getCommonCircles(
 						path.lastRelationship().getOtherNode(path.endNode()), target).size();
 				//int count = QueryCircles.getCommonCircles(path.lastRelationship().getOtherNode(path.endNode()), target).size();
 				if (scaling) {
@@ -344,7 +343,7 @@ public class FeatureBuilder {
 		return new Feature<Double>() {
 			@Override
 			public Double getFeature(Path path, Node target) {
-				double size = QueryCircles.getInstance().getMinCommonCircleLabel(
+				double size = QueryCircles.getInstance().getMinCommonCircle(
 						path.lastRelationship().getOtherNode(path.endNode()), target);
 				//double size = QueryCircles.getMinCommonCircle(path.lastRelationship().getOtherNode(path.endNode()), target);
 				if (size == Integer.MAX_VALUE) size = max;
@@ -373,9 +372,8 @@ public class FeatureBuilder {
 		return new Feature<Double>() {
 			@Override
 			public Double getFeature(Path path, Node target) {
-				int size = QueryCircles.getInstance().getMaxCommonCircleLabel(
-						path.lastRelationship().getOtherNode(path.endNode()), target).intValue();
-				//int size = QueryCircles.getMaxCommonCircle(path.lastRelationship().getOtherNode(path.endNode()), target);
+				int size = QueryCircles.getInstance().getMaxCommonCircle(
+						path.lastRelationship().getOtherNode(path.endNode()), target);
 				if (scaling) {
 					if (size > max) System.err.println("MaxCommonCircleWithTarget feature " + size + " exceed max: " + max);
 					return ((double)size) / max;

@@ -1,16 +1,12 @@
 package smallworld.data.query;
 
 import java.io.IOException;
-import java.util.Collections;
 
 import org.junit.AfterClass;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.TemporaryFolder;
-import org.neo4j.graphdb.DynamicLabel;
-
-import com.google.common.collect.Lists;
 
 import smallworld.data.inserter.exp.Neo4JInserter;
 import smallworld.data.inserter.exp.SimpleGraphInserter;
@@ -19,14 +15,16 @@ public class QueryCirclesTest {
 	@Rule
 	public TemporaryFolder folder = new TemporaryFolder();
 	
-	private static QueryCircles query;
+	private static Query query;
+	private static QueryCircles queryCircles;
 	
 	@Before
 	public void initialize() throws IOException {
 		if (query == null) {
 			Neo4JInserter inserter = new Neo4JInserter(folder.getRoot().getAbsolutePath());
 			new SimpleGraphInserter(inserter);
-			query = new QueryCircles(new Query(folder.getRoot().getAbsolutePath()));
+			query = new Query(folder.getRoot().getAbsolutePath());
+			queryCircles = new QueryCircles(query);
 		}
 	}
 	
@@ -37,15 +35,20 @@ public class QueryCirclesTest {
 	
 	@Test
 	public void test() {
-		System.out.println(query.getCircles(0l));
-		System.out.println(query.getCircles(1l));
-		System.out.println(query.getCircles(2l));
-		System.out.println(query.getCircles(3l));
-		System.out.println(query.getCircles(4l));
-		System.out.println(query.getCircles(5l));
-		System.out.println(query.getCircles(6l));
+		System.out.println(queryCircles.getCircles(query.cypherGetNode(0)));
+		System.out.println(queryCircles.getCircles(query.cypherGetNode(1)));
+		System.out.println(queryCircles.getCircles(query.cypherGetNode(2)));
+		System.out.println(queryCircles.getCircles(query.cypherGetNode(3)));
+		System.out.println(queryCircles.getCircles(query.cypherGetNode(4)));
+		System.out.println(queryCircles.getCircles(query.cypherGetNode(5)));
+		System.out.println(queryCircles.getCircles(query.cypherGetNode(6)));
 	}
 	
+	@Test
+	public void testGetCircle() {
+		System.out.println(queryCircles.cypherGetCircleNames(5));
+	}
+
 	/*
 	System.out.println(qc.getCircleLabels(q.cypherGetNode(1)));
 	System.out.println(qc.getCircleLabels(q.cypherGetNode(4)));

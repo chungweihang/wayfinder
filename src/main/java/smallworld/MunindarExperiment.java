@@ -117,7 +117,7 @@ public class MunindarExperiment {
 		
 		// picking random starting vertices
 		Query query = new Query("neo4j/" + graphName);
-		Long[] nodeIds = query.cypherAllNodes();
+		Long[] nodeIds = query.cypherGetAllNodes();
 		
 		int n = Math.min(nodeIds.length, numberOfPaths);
 		

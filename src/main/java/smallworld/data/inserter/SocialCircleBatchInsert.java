@@ -29,6 +29,7 @@ import smallworld.util.Utils;
  * @author chang
  *
  */
+@Deprecated
 public class SocialCircleBatchInsert {
 
 	protected String neo4jPath, dataPath;

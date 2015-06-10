@@ -33,6 +33,7 @@ import com.google.common.collect.Multimap;
  * @author chang
  *
  */
+@Deprecated
 public class DBLPHandler extends DefaultHandler {
 	// XML element content, e.g., <author>Joe Doe</author>
     private StringBuilder content;

@@ -38,7 +38,7 @@ public class Main {
 		int count = 0;
 		long sum = 0;
 		
-		List<Long> nodeIds = Arrays.asList(q.cypherAllNodes());
+		List<Long> nodeIds = Arrays.asList(q.cypherGetAllNodes());
 		Collections.shuffle(nodeIds, new Random(0));
 		
 		if (nodeLimit == -1 || nodeLimit > nodeIds.size()) nodeLimit = nodeIds.size();

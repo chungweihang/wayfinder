@@ -13,6 +13,7 @@ import smallworld.data.RelationshipTypes;
 import smallworld.data.query.Query;
 import smallworld.util.Utils;
 
+@Deprecated
 public class SimpleGraphBatchInsert {
 
 	private SimpleGraphBatchInsert() {

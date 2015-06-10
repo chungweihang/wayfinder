@@ -23,7 +23,7 @@ public class ClusteringCoefficient {
 		String dataset = args[0];
 		Query q = new Query("neo4j/" + dataset);
 		int count = 0;
-		for (Long ego : q.cypherAllNodes()) {
+		for (Long ego : q.cypherGetAllNodes()) {
 			if (++ count % 100 == 0) System.out.println(count);
 			clusteringCoefficient(q, ego);
 		}

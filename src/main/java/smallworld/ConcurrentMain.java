@@ -103,7 +103,7 @@ public class ConcurrentMain implements NavigationCompleteListener {
 		calendar.set(Calendar.getInstance());
 		
 		// sorted node id
-		List<Long> nodeIds = Arrays.asList(q.cypherAllNodes());
+		List<Long> nodeIds = Arrays.asList(q.cypherGetAllNodes());
 		
 		ExecutorService executor = Executors.newFixedThreadPool(NUMBER_OF_THREADS);
 		//List<Future<Path>> list = new ArrayList<Future<Path>>();

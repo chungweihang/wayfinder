@@ -9,11 +9,9 @@ import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
-import java.util.Properties;
 import java.util.Random;
 import java.util.Set;
 
-import org.neo4j.graphdb.Label;
 import org.neo4j.graphdb.Node;
 import org.neo4j.graphdb.RelationshipType;
 
@@ -41,7 +39,7 @@ public class FeaturesCirclesRelationships {
 		long time = System.currentTimeMillis();
 		
 		// shuffle the nodes
-		List<Long> nodeIds = Arrays.asList(q.cypherAllNodes());
+		List<Long> nodeIds = Arrays.asList(q.cypherGetAllNodes());
 		Collections.shuffle(nodeIds, new Random(0));
 		
 		// -1 to examine all nodes
@@ -51,8 +49,8 @@ public class FeaturesCirclesRelationships {
 			Node n1 = q.cypherGetNode(nodeIds.get(i));
 
 			// get all cirlces n1 belongs to
-			Set<Label> circles = new HashSet<>();
-			for (Iterator<Label> iterator = qc.getCircleLabels(n1).iterator(); iterator.hasNext(); ) {
+			Set<Node> circles = new HashSet<>();
+			for (Iterator<Node> iterator = qc.getCircles(n1).iterator(); iterator.hasNext(); ) {
 				circles.add(iterator.next());
 			}
 			
@@ -61,16 +59,16 @@ public class FeaturesCirclesRelationships {
 				Node n2 = q.cypherGetNode(nodeIds.get(j));
 				
 				int count = 0;
-				Properties properties1 = QueryFeatures.getFeatures(n1); //properties1.list(System.out);
-				Properties properties2 = QueryFeatures.getFeatures(n2); //properties2.list(System.out);
-				for (Iterator<String> it = properties1.stringPropertyNames().iterator(); it.hasNext(); ) {
+				Map<String, Object> properties1 = QueryFeatures.getFeatures(n1); //properties1.list(System.out);
+				Map<String, Object> properties2 = QueryFeatures.getFeatures(n2); //properties2.list(System.out);
+				for (Iterator<String> it = properties1.keySet().iterator(); it.hasNext(); ) {
 					String key = it.next();
-					if (properties2.containsKey(key) && properties2.getProperty(key).equals(properties1.getProperty(key)))
+					if (properties2.containsKey(key) && properties2.get(key).equals(properties1.get(key)))
 						count++;
 				}
 				
-				for (Iterator<Label> iterator = qc.getCircleLabels(n2).iterator(); iterator.hasNext(); ) {
-					Label circle = iterator.next();
+				for (Iterator<Node> iterator = qc.getCircles(n2).iterator(); iterator.hasNext(); ) {
+					Node circle = iterator.next();
 					if (circles.contains(circle)) {
 						if (!circleResults.containsKey(count)) circleResults.put(count, 1);
 						else circleResults.put(count, circleResults.get(count) + 1);
@@ -105,7 +103,7 @@ public class FeaturesCirclesRelationships {
 
 		long time = System.currentTimeMillis();
 		
-		List<Long> nodeIds = Arrays.asList(q.cypherAllNodes());
+		List<Long> nodeIds = Arrays.asList(q.cypherGetAllNodes());
 		Collections.shuffle(nodeIds, new Random(0));
 		
 		if (nodeLimit == -1) nodeLimit = nodeIds.size();
@@ -117,11 +115,11 @@ public class FeaturesCirclesRelationships {
 				Node n2 = q.cypherGetNode(nodeIds.get(j));
 				
 				int count = 0;
-				Properties properties1 = QueryFeatures.getFeatures(n1); //properties1.list(System.out);
-				Properties properties2 = QueryFeatures.getFeatures(n2); //properties2.list(System.out);
-				for (Iterator<String> it = properties1.stringPropertyNames().iterator(); it.hasNext(); ) {
+				Map<String, Object> properties1 = QueryFeatures.getFeatures(n1); //properties1.list(System.out);
+				Map<String, Object> properties2 = QueryFeatures.getFeatures(n2); //properties2.list(System.out);
+				for (Iterator<String> it = properties1.keySet().iterator(); it.hasNext(); ) {
 					String key = it.next();
-					if (properties2.containsKey(key) && properties2.getProperty(key).equals(properties1.getProperty(key)))
+					if (properties2.containsKey(key) && properties2.get(key).equals(properties1.get(key)))
 						count++;
 				}
 				

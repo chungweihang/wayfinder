@@ -21,6 +21,7 @@ import com.google.common.collect.HashMultimap;
 import com.google.common.collect.Multimap;
 import com.google.common.collect.Table;
 
+@Deprecated
 public class MSAcademyBatchInserter {
 	
 	//Set<Integer> authorIds = new HashSet<Integer>();
