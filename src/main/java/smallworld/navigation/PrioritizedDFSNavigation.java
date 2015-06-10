@@ -250,7 +250,7 @@ public class PrioritizedDFSNavigation extends AbstractNavigation implements Comp
 		PathFinder<Path> nav = new PrioritizedDFSNavigation(PathExpanders.forTypeAndDirection(type, direction), new DegreeEvaluator(type, direction));
 		
 		Query q = new Query("neo4j/" + dataset);
-		nav.findSinglePath(q.getNode(373654), q.getNode(1557));
+		nav.findSinglePath(q.cypherGetNode(373654), q.cypherGetNode(1557));
 		
 	}
 }

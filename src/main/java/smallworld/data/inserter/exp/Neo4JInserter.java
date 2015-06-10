@@ -38,7 +38,7 @@ import com.google.common.collect.Multimap;
 public class Neo4JInserter implements GraphInserter {
 
 	private static final Logger logger = LogManager.getLogger();
-	private static final String IDENTIFIER = "DATASET_IDENTIFIER";
+	public static final String IDENTIFIER = "DATASET_IDENTIFIER";
 	
 	final BatchInserter inserter;
 

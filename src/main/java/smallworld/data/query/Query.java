@@ -10,25 +10,24 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
-import org.neo4j.cypher.javacompat.ExecutionEngine;
-import org.neo4j.cypher.javacompat.ExecutionResult;
 import org.neo4j.graphdb.Direction;
 import org.neo4j.graphdb.GraphDatabaseService;
 import org.neo4j.graphdb.Label;
 import org.neo4j.graphdb.Node;
 import org.neo4j.graphdb.Relationship;
 import org.neo4j.graphdb.RelationshipType;
+import org.neo4j.graphdb.Result;
 import org.neo4j.graphdb.factory.GraphDatabaseFactory;
-
-import com.google.common.collect.Lists;
 
 import smallworld.Constants;
 import smallworld.data.RelationshipTypes;
+import smallworld.data.inserter.exp.Neo4JInserter;
+
+import com.google.common.collect.Lists;
 
 public class Query {
 	
 	private GraphDatabaseService db;
-	private ExecutionEngine engine;
 	
 	private static Query INSTANCE = null;
 	
@@ -40,21 +39,21 @@ public class Query {
 	public Query(String path) {
 		//db = new EmbeddedGraphDatabase(path);
 		db = new GraphDatabaseFactory().newEmbeddedDatabase(path);
-        engine = new ExecutionEngine(db);
 	}
 
 	public GraphDatabaseService getGraphDatabaseService() {
 		return db;
 	}
 
-	public ExecutionResult cypherQuery(String query) {
-		return engine.execute(query);
+	public Result cypherQuery(String query) {
+		return db.execute(query);
 	}
 	
-	public void print(ExecutionResult result) {
+	public void print(Result result) {
 		String rows = "";
-        for (Map<String, Object> row : result)
+        for (; result.hasNext(); )
         {
+        	Map<String, Object> row = result.next();
             for (Entry<String, Object> column : row.entrySet())
             {
                 rows += column.getKey() + ": " + column.getValue() + "; ";
@@ -65,11 +64,12 @@ public class Query {
         System.out.println(rows);
 	}
 	
-	private static List<Object> cypherQueryResult(ExecutionResult result, String key) {
+	private static List<Object> getCypherQueryResult(Result result, String key) {
 		List<Object> values = new ArrayList<Object>();
 		
-		for (Map<String, Object> row : result)
+		for (; result.hasNext(); )
         {
+        	Map<String, Object> row = result.next();
 			if (row.containsKey(key)) values.add(row.get(key));
         }
 		
@@ -80,20 +80,20 @@ public class Query {
 		db.shutdown();
 	}
 	
-	public void numberOfNode() {
+	public void cypherNumberOfNodes() {
 		print(cypherQuery("START n=node(*) RETURN count(*)"));
 	}
 	
 	
-	public void numberOfRelationships() {
+	public void cypherNumberOfRelationships() {
 		print(cypherQuery( 
         		"START n=node(*) " +   
         		"MATCH n-[r]->() " + 
         		"RETURN type(r), count(*);"));
     }
 	
-	public List<Relationship> getCircles(long from, String circle) {
-		ExecutionResult result = cypherQuery(
+	public List<Relationship> cypherGetCircles(long from, String circle) {
+		Result result = cypherQuery(
 				"START n = node(" + from + ") " +
 				"MATCH n-[r?:CIRCLE]->m " +
 				"WHERE r.name = \"" + circle + "\" " + 
@@ -117,8 +117,8 @@ public class Query {
 		}
 	}
 	
-	public Node getNode(long ego) {
-		ExecutionResult result = cypherQuery(
+	public Node cypherGetNode(long ego) {
+		Result result = cypherQuery(
 				"START n = node(" + ego + ") " +
 				"RETURN n");
 		
@@ -127,12 +127,24 @@ public class Query {
 		return null;
 	}
 	
-	@Deprecated
-	public List<String> getCircleNames(long from) {
-		ExecutionResult result = cypherQuery(
+	/*
+	public Node cypherGetNode(Object person) {
+		Result result = cypherQuery(
+				"MATCH (n) " +
+				"WHERE n:PERSON AND n." + Neo4JInserter.IDENTIFIER + " = " + person + " " +
+				"RETURN n");
+		
+		Iterator<Node> nodes = result.columnAs("n");
+		if (nodes.hasNext()) return nodes.next();
+		return null;
+	}
+	*/
+	
+	public List<String> cypherGetCircleNames(long from) {
+		Result result = cypherQuery(
 				"START n = node(" + from + ") " +
-				"MATCH n-[r?:CIRCLE]->m " +
-				"RETURN DISTINCT r.name as circles");
+				"MATCH n-[r:CIRCLE]->m " +
+				"RETURN DISTINCT m." + Neo4JInserter.IDENTIFIER + " as circles");
 		
 		List<String> circles = new ArrayList<String>();
 		
@@ -144,8 +156,8 @@ public class Query {
 		return circles;
 	}
 	
-	public List<List<Node>> allShortestPathsDistinctNodes(long from, long to, String relationship, int length) {
-		ExecutionResult result = cypherQuery( 
+	public List<List<Node>> cypherAllShortestPathsDistinctNodes(long from, long to, String relationship, int length) {
+		Result result = cypherQuery( 
         		"START n = node(" + from + "), m = node(" + to + ") " +  
         		"MATCH p = allShortestPaths(n-[:" + relationship + "*.." + length + "]-m) " + 
         		//"RETURN n as from, p as `->`, m as to, length(p);");
@@ -162,25 +174,25 @@ public class Query {
 		return paths;
 	}
 	
-	public int shortestPathLength(long from, long to, String relationship, Direction dir, int length) {
+	public int cypherShortestPathLength(long from, long to, String relationship, Direction dir, int length) {
 		
 		String direction = "-";
 		if (dir == Direction.OUTGOING) direction = "->";
 		
-		ExecutionResult result = cypherQuery( 
+		Result result = cypherQuery( 
         		"START n = node(" + from + "), m = node(" + to + ") " +  
         		"MATCH p = shortestPath(n-[:" + relationship + "*.." + length + "]" + direction + "m) " + 
         		//"RETURN n as from, p as `->`, m as to, length(p);");
 				"RETURN length(p) as length;");
 				// "foreach(x in nodes(p) : RETURN x);");
 		
-		List<Object> values = cypherQueryResult(result, "length");
+		List<Object> values = getCypherQueryResult(result, "length");
 		
 		if (values.size() == 0) return 0;
 		return (Integer) values.get(0);
 	}
 	
-	public int countCirclePathInPaths(List<Node> path) {
+	public static int countCirclePathInPaths(List<Node> path) {
 		
 		int count = 0;
 		
@@ -252,12 +264,12 @@ public class Query {
 	}
 	*/
 	
-	public List<Relationship> getRelationshipsFrom(long from, String relationship, Direction dir) {
+	public List<Relationship> cypherRelationshipsFrom(long from, String relationship, Direction dir) {
 		
 		String direction = "-";
 		if (dir == Direction.OUTGOING) direction = "->";
 		
-		ExecutionResult result = cypherQuery(
+		Result result = cypherQuery(
 				"START n = node(" + from + ") " +
 				"MATCH n-[r?:" + relationship + "]" + direction + "m " + 
 				"RETURN r;");
@@ -272,12 +284,12 @@ public class Query {
 		return rels;
 	}
 	
-	public List<Relationship> getRelationshipsTo(long to, String relationship, Direction dir) {
+	public List<Relationship> cypherRelationshipsTo(long to, String relationship, Direction dir) {
 		
 		String direction = "-";
 		if (dir == Direction.OUTGOING) direction = "->";
 		
-		ExecutionResult result = cypherQuery(
+		Result result = cypherQuery(
 				"START m = node(" + to + ") " +
 				"MATCH n-[r?:" + relationship + "]" + direction + "m " + 
 				"RETURN r;");
@@ -292,12 +304,12 @@ public class Query {
 		return rels;
 	}
 	
-	public List<Relationship> getRelationships(long from, long to, String relationship, Direction dir) {
+	public List<Relationship> cypherRelationships(long from, long to, String relationship, Direction dir) {
 		
 		String direction = "-";
 		if (dir == Direction.OUTGOING) direction = "->";
 		
-		ExecutionResult result = cypherQuery(
+		Result result = cypherQuery(
 				"START n = node(" + from + "), m = node(" + to + ") " +
 				"MATCH n-[r?:" + relationship + "]" + direction + "m " + 
 				"RETURN r;");
@@ -312,10 +324,10 @@ public class Query {
 		return rels;
 	}
 	
-	public Long[] allNodes() {
-		ExecutionResult result = cypherQuery("START n = node(*) RETURN ID(n) as id ORDER BY id;");
+	public Long[] cypherAllNodes() {
+		Result result = cypherQuery("START n = node(*) RETURN ID(n) as id ORDER BY id;");
 		
-		List<Object> list = cypherQueryResult(result, "id");
+		List<Object> list = getCypherQueryResult(result, "id");
 
 		Long[] ids = new Long[list.size()];
 		for (int i = 0; i < list.size(); i++) {
@@ -332,7 +344,7 @@ public class Query {
 		// from, to, friend-length, # friend links, # circle links, circle-length
 		try {
 			writer = new BufferedWriter(new FileWriter("facebook-circle-in-friendship.log"));
-			Long[] nodes = allNodes();
+			Long[] nodes = cypherAllNodes();
 			
 			// for sampling
 			int limit = 5;
@@ -347,7 +359,7 @@ public class Query {
 					if (n1 == n2) continue;
 					// String str = countCirclesInAllShortestPaths(n1, n2);
 					List<List<Node>> paths = 
-							allShortestPathsDistinctNodes(n1, n2, RelationshipTypes.FRIEND.name(), 15);
+							cypherAllShortestPathsDistinctNodes(n1, n2, RelationshipTypes.FRIEND.name(), 15);
 					
 					StringBuilder str = new StringBuilder();
 					
@@ -408,28 +420,4 @@ public class Query {
 		return labels.toArray(EMPTY_LABEL_ARRAY);
 	}
 	
-	/**
-	 * @param args
-	 */
-	public static void main(String[] args) {
-		String dataset = "facebook";
-		
-		Query q = new Query("neo4j/" + dataset);
-		
-		//q.numberOfNode();
-		//q.numberOfRelationships();
-		
-		// System.out.println(q.getRelationshipsFrom(809864, "FRIEND", Direction.OUTGOING).size());
-		
-		// q.analyzeNumberOfCircleRelationshipsInFriendPaths();
-		// System.out.println(q.shortestPathLength(0, 2000, "CIRCLE", 15));
-		//q.allShortestPathsNodes(0, 426, "FRIEND", 15);
-		// q.allShortestPathsDistinctNodes(0, 348, "FRIEND", 15);
-		//q.allShortestPathsNodes(0, 1, "CIRCLE", 15);
-		// System.out.println(q.getRelationships(0, 11, "CIRCLE").size());
-		//q.existRelationships(119, 1, "CIRCLE");
-		//q.allNodes();
-		q.shutdown();
-	}
-
 }

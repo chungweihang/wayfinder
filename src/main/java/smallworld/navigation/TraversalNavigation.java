@@ -125,7 +125,7 @@ public class TraversalNavigation implements PathFinder<Path> {
 		//new ConcurrentMain(nav, "neo4j/" + dataset, 1, 1, "temp.shortest.log");
 		
 		Query q = new Query("neo4j/" + dataset);
-		System.err.println(nav.findSinglePath(q.getNode(373654), q.getNode(1557)));
+		System.err.println(nav.findSinglePath(q.cypherGetNode(373654), q.cypherGetNode(1557)));
 		//System.err.println(nav.findSinglePath(q.getNode(1), q.getNode(7)));
 		
 	}

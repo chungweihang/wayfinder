@@ -41,14 +41,14 @@ public class FeaturesCirclesRelationships {
 		long time = System.currentTimeMillis();
 		
 		// shuffle the nodes
-		List<Long> nodeIds = Arrays.asList(q.allNodes());
+		List<Long> nodeIds = Arrays.asList(q.cypherAllNodes());
 		Collections.shuffle(nodeIds, new Random(0));
 		
 		// -1 to examine all nodes
 		if (nodeLimit == -1) nodeLimit = nodeIds.size();
 		
 		for (int i = 0; i < nodeLimit; i++) {
-			Node n1 = q.getNode(nodeIds.get(i));
+			Node n1 = q.cypherGetNode(nodeIds.get(i));
 
 			// get all cirlces n1 belongs to
 			Set<Label> circles = new HashSet<>();
@@ -58,7 +58,7 @@ public class FeaturesCirclesRelationships {
 			
 			for (int j = 0; j < nodeLimit; j++) {
 				if (i == j) continue;
-				Node n2 = q.getNode(nodeIds.get(j));
+				Node n2 = q.cypherGetNode(nodeIds.get(j));
 				
 				int count = 0;
 				Properties properties1 = QueryFeatures.getFeatures(n1); //properties1.list(System.out);
@@ -105,16 +105,16 @@ public class FeaturesCirclesRelationships {
 
 		long time = System.currentTimeMillis();
 		
-		List<Long> nodeIds = Arrays.asList(q.allNodes());
+		List<Long> nodeIds = Arrays.asList(q.cypherAllNodes());
 		Collections.shuffle(nodeIds, new Random(0));
 		
 		if (nodeLimit == -1) nodeLimit = nodeIds.size();
 		
 		for (int i = 0; i < nodeLimit; i++) {
-			Node n1 = q.getNode(nodeIds.get(i));
+			Node n1 = q.cypherGetNode(nodeIds.get(i));
 			for (int j = 0; j < nodeLimit; j++) {
 				if (i == j) continue;
-				Node n2 = q.getNode(nodeIds.get(j));
+				Node n2 = q.cypherGetNode(nodeIds.get(j));
 				
 				int count = 0;
 				Properties properties1 = QueryFeatures.getFeatures(n1); //properties1.list(System.out);

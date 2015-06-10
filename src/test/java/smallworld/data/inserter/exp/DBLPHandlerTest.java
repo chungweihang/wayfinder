@@ -35,6 +35,6 @@ public class DBLPHandlerTest {
 	    	handler.insert();
 	    	
 	    	Query q = new Query(neo4JPath);
-	    	System.out.println(q.allNodes().length);
+	    	System.out.println(q.cypherAllNodes().length);
 	}
 }

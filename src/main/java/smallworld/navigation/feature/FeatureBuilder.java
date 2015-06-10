@@ -211,7 +211,8 @@ public class FeatureBuilder {
 		return new Feature<Double>() {
 			@Override
 			public Double getFeature(Path path, Node target) {
-				int count = QueryCircles.getInstance().getCommonCircleLabels(path.endNode(), target).size();
+				//int count = QueryCircles.getInstance().getCommonCircleLabels(path.endNode(), target).size();
+				int count = QueryCircles.getInstance().getCommonCircles(path.endNode(), target).size();
 				return count > 0 ? ONE : ZERO; 
 			}
 			
@@ -230,8 +231,8 @@ public class FeatureBuilder {
 		return new Feature<Double>() {
 			@Override
 			public Double getFeature(Path path, Node target) {
-				int count = QueryCircles.getInstance().getCommonCircleLabels(path.endNode(), target).size();
-				//int count = QueryCircles.getCommonCircles(path.endNode(), target).size();
+				//int count = QueryCircles.getInstance().getCommonCircleLabels(path.endNode(), target).size();
+				int count = QueryCircles.getInstance().getCommonCircles(path.endNode(), target).size();
 				if (scaling) {
 					if (count > max) System.err.println("CommonCirclesWithTarget feature " + count + " exceed max: " + max);
 					return ((double)count) / max;

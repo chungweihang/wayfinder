@@ -2,7 +2,7 @@ package smallworld.data.query;
 
 import java.util.Iterator;
 
-import org.neo4j.cypher.javacompat.ExecutionResult;
+import org.neo4j.graphdb.Result;
 
 /**
  * 
@@ -23,7 +23,7 @@ public class ClusteringCoefficient {
 		String dataset = args[0];
 		Query q = new Query("neo4j/" + dataset);
 		int count = 0;
-		for (Long ego : q.allNodes()) {
+		for (Long ego : q.cypherAllNodes()) {
 			if (++ count % 100 == 0) System.out.println(count);
 			clusteringCoefficient(q, ego);
 		}
@@ -44,7 +44,7 @@ public class ClusteringCoefficient {
 	public static Double clusteringCoefficient(Query query, long ego) {
 		// clustering coefficient 
         // r / (n! / (2!(n-2)!))
-		ExecutionResult result = query.cypherQuery( 
+		Result result = query.cypherQuery( 
         		"START a = node(" + ego + ") " +
         		"MATCH (a)-[:FRIEND]-(b) " +
         		"WITH a, count(distinct b) as n " +

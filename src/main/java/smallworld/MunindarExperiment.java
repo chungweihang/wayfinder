@@ -117,7 +117,7 @@ public class MunindarExperiment {
 		
 		// picking random starting vertices
 		Query query = new Query("neo4j/" + graphName);
-		Long[] nodeIds = query.allNodes();
+		Long[] nodeIds = query.cypherAllNodes();
 		
 		int n = Math.min(nodeIds.length, numberOfPaths);
 		
@@ -135,7 +135,7 @@ public class MunindarExperiment {
 		
 		// random walk path and collect numbers
 		for (Long id : randomNodeIds) {
-			Node source = query.getNode(id);
+			Node source = query.cypherGetNode(id);
 			Path path = randomWalk(query.getGraphDatabaseService(), source, maxDepth);
 			collectStatistics(query.getGraphDatabaseService(), path);
 		}

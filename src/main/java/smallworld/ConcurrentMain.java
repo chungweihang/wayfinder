@@ -103,7 +103,7 @@ public class ConcurrentMain implements NavigationCompleteListener {
 		calendar.set(Calendar.getInstance());
 		
 		// sorted node id
-		List<Long> nodeIds = Arrays.asList(q.allNodes());
+		List<Long> nodeIds = Arrays.asList(q.cypherAllNodes());
 		
 		ExecutorService executor = Executors.newFixedThreadPool(NUMBER_OF_THREADS);
 		//List<Future<Path>> list = new ArrayList<Future<Path>>();
@@ -131,8 +131,8 @@ public class ConcurrentMain implements NavigationCompleteListener {
 			
 			Pair<Long, Long> pair = pairs.get(i);
 			
-			Node n1 = q.getNode(pair.getFirst());
-			Node n2 = q.getNode(pair.getSecond());
+			Node n1 = q.cypherGetNode(pair.getFirst());
+			Node n2 = q.cypherGetNode(pair.getSecond());
 			
 			ConcurrentNavigationThread worker = new ConcurrentNavigationThread(q.getGraphDatabaseService(), i+1, nav, n1, n2, writer);
 			worker.addListener(this);

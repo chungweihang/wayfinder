@@ -23,7 +23,7 @@ public class QueryFeatures {
 	}
 	
 	public Properties getFeatures(long ego) {
-		List<Relationship> rels = query.getRelationshipsTo(ego, RelationshipTypes.KNOWS.name(), Direction.OUTGOING);
+		List<Relationship> rels = query.cypherRelationshipsTo(ego, RelationshipTypes.KNOWS.name(), Direction.OUTGOING);
 		
 		Properties features = new Properties();
 		

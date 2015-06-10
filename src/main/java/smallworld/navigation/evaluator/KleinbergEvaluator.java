@@ -1,16 +1,16 @@
 package smallworld.navigation.evaluator;
 
 import java.util.Iterator;
-import java.util.Set;
 
 import org.neo4j.graphdb.Direction;
-import org.neo4j.graphdb.Label;
 import org.neo4j.graphdb.Node;
 import org.neo4j.graphdb.Path;
 import org.neo4j.graphdb.Relationship;
 import org.neo4j.graphdb.RelationshipType;
 
 import smallworld.data.query.QueryCircles;
+
+import com.google.common.collect.ImmutableSet;
 
 public class KleinbergEvaluator implements Evaluator<Integer> {
 	
@@ -43,8 +43,8 @@ public class KleinbergEvaluator implements Evaluator<Integer> {
 		// Node previous = path.lastRelationship().getOtherNode(current);
 		
 		//Set<String> previousCommonCircles = QueryCircles.getCommonCircles(previous, target);
-		//Set<String> currentCommonCircles = QueryCircles.getCommonCircles(end, target);
-		Set<Label> currentCommonCircles = QueryCircles.getInstance().getCommonCircleLabels(end, target);
+		ImmutableSet<Node> currentCommonCircles = QueryCircles.getInstance().getCommonCircles(end, target);
+		//Set<Label> currentCommonCircles = QueryCircles.getInstance().getCommonCircleLabels(end, target);
 		
 		/*
 		if (previousCommonCircles.size() >= 0) { // previous is in target's circles

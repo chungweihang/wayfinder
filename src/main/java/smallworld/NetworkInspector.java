@@ -21,12 +21,12 @@ public class NetworkInspector {
 		Multiset<Label> circleSizes = HashMultiset.create();
 		Multiset<Integer> peopleSizes = HashMultiset.create();
 		
-		Long[] nodes = q.allNodes();
+		Long[] nodes = q.cypherAllNodes();
 		System.err.println("number of nodes: " + nodes.length);
 		
 		for (Long nid : nodes) {
 			int circleCount = 0;
-			Iterator<Label> circles = qc.getCircleLabels(q.getNode(nid)).iterator();
+			Iterator<Label> circles = qc.getCircleLabels(q.cypherGetNode(nid)).iterator();
 			while (circles.hasNext()) {
 				circleCount++;
 				Label circle = circles.next();

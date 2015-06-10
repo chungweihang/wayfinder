@@ -8,6 +8,7 @@ import org.neo4j.graphdb.Label;
 import org.neo4j.graphdb.Node;
 
 import smallworld.data.RelationshipTypes;
+import smallworld.data.inserter.exp.Neo4JInserter;
 
 /**
  * Query a path from social circle dataset
@@ -28,7 +29,7 @@ public class QueryPath {
 	}
 	
 	public void getPath(long from, long to, RelationshipTypes rel) {
-		List<List<Node>> paths = query.allShortestPathsDistinctNodes(from, to, rel.name(), 15);
+		List<List<Node>> paths = query.cypherAllShortestPathsDistinctNodes(from, to, rel.name(), 15);
 		
 		for (int i = 0; i < paths.size(); i++) {
 			System.out.println("==== path " + i + " ====");
@@ -52,8 +53,9 @@ public class QueryPath {
 			if (previous != null) {
 				System.out.println("** circles **");
 				
-				for (Iterator<Label> circles = qc.getCircleLabels(n).iterator(); circles.hasNext(); ) {
-					System.out.println(circles.next().name());
+				//for (Iterator<Label> circles = qc.getCircleLabels(n).iterator(); circles.hasNext(); ) {
+				for (Node circle : qc.getCircles(n)) {
+					System.out.println(circle.getProperty(Neo4JInserter.IDENTIFIER));
 				}
 			}
 			

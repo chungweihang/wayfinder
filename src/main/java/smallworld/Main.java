@@ -38,16 +38,16 @@ public class Main {
 		int count = 0;
 		long sum = 0;
 		
-		List<Long> nodeIds = Arrays.asList(q.allNodes());
+		List<Long> nodeIds = Arrays.asList(q.cypherAllNodes());
 		Collections.shuffle(nodeIds, new Random(0));
 		
 		if (nodeLimit == -1 || nodeLimit > nodeIds.size()) nodeLimit = nodeIds.size();
 		
 		for (int i = 0; i < nodeLimit; i++) {
-			Node n1 = q.getNode(nodeIds.get(i));
+			Node n1 = q.cypherGetNode(nodeIds.get(i));
 			for (int j = 0; j < nodeLimit; j++) {
 				if (i == j) continue;
-				Node n2 = q.getNode(nodeIds.get(j));
+				Node n2 = q.cypherGetNode(nodeIds.get(j));
 				
 				Transaction tx = q.getGraphDatabaseService().beginTx();
 				Path p = nav.findSinglePath(n1, n2);
