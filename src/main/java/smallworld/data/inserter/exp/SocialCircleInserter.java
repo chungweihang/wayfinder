@@ -23,12 +23,11 @@ public class SocialCircleInserter {
 	
 	private static final Logger logger = LogManager.getLogger();
 
-	final Neo4JInserter inserter;
-	
+	final GraphInserter inserter;
 	protected final String dataPath;
 	
-	public SocialCircleInserter(final String neo4jPath, final String dataPath, final boolean isDirected) {
-		inserter = new Neo4JInserter(neo4jPath, isDirected);
+	public SocialCircleInserter(final String dataPath, final GraphInserter inserter) {
+		this.inserter = inserter;
 		this.dataPath = dataPath;
 	}
 	
@@ -187,8 +186,10 @@ public class SocialCircleInserter {
 				String[] tokens = line.split("\t");
 				
 				// Size of circle: ego + all the nodes in tokens = 1 + tokens.length - 1 = tokens.length
+				/*
 				int circleSize = tokens.length;
 				if (circleSize > inserter.maxCircle) inserter.maxCircle = circleSize;
+				*/
 				
 				String circleName = ego + ":" + tokens[0];
 				inserter.addCircle(circleName);
@@ -227,14 +228,17 @@ public class SocialCircleInserter {
 		String neo4JPath = "neo4j/" + dataset + "-exp";
 		String dataPath = "data/" + dataset;
 		
-		SocialCircleInserter insert = null; 
+		SocialCircleInserter insert = null;
 		
 		if (dataset.equals("facebook")) {
-			insert = new SocialCircleInserter(neo4JPath, dataPath, false);
+			insert = new SocialCircleInserter(dataPath, 
+					new Neo4JInserter(neo4JPath, false));
 		} else if (dataset.equals("gplus")) {
-			insert = new SocialCircleInserter(neo4JPath, dataPath, true);
+			insert = new SocialCircleInserter(dataPath, 
+					new Neo4JInserter(neo4JPath, true));
 		} else if (dataset.equals("twitter")) {
-			insert = new SocialCircleInserter(neo4JPath, dataPath, true);
+			insert = new SocialCircleInserter(dataPath, 
+					new Neo4JInserter(neo4JPath, true));
 		} else {
 			usage();
 			System.exit(0);

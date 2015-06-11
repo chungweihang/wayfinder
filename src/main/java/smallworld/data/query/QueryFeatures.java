@@ -1,16 +1,11 @@
 package smallworld.data.query;
 
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.Map;
-import java.util.Properties;
 
-import org.neo4j.graphdb.Direction;
 import org.neo4j.graphdb.Node;
-import org.neo4j.graphdb.Relationship;
 
 import edu.stanford.nlp.util.Maps;
-import smallworld.data.RelationshipTypes;
 
 public class QueryFeatures {
 

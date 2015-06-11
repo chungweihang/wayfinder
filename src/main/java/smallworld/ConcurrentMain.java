@@ -304,10 +304,8 @@ public class ConcurrentMain implements NavigationCompleteListener {
 			switch (args[NEO4J_PATH]) {
 			case "msacademy-circlesize":
 			case "msacademy":
-				type = RelationshipTypes.FRIEND.type();
-				dir = Direction.BOTH;
-				break;
 			case "facebook":
+			case "facebook-exp":
 			case "dblp":
 			case "dblp-inproceedings":
 			case "amazon":

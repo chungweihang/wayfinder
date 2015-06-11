@@ -14,9 +14,9 @@ import org.neo4j.graphdb.Relationship;
 import org.neo4j.graphdb.Result;
 import org.neo4j.kernel.Traversal;
 
-import edu.stanford.nlp.util.Maps;
 import smallworld.data.RelationshipTypes;
 import smallworld.data.inserter.exp.Neo4JInserter;
+import edu.stanford.nlp.util.Maps;
 
 /**
  * Query a path from social circle dataset
