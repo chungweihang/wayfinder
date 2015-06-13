@@ -1,11 +1,9 @@
 package smallworld.data.query;
 
-import java.io.PrintStream;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
-import java.util.Map.Entry;
 
 import org.neo4j.graphdb.Direction;
 import org.neo4j.graphdb.GraphDatabaseService;
@@ -17,6 +15,7 @@ import org.neo4j.graphdb.Result;
 import org.neo4j.graphdb.factory.GraphDatabaseFactory;
 
 import smallworld.Constants;
+import smallworld.data.inserter.exp.Neo4JInserter;
 
 import com.google.common.collect.Lists;
 
@@ -69,18 +68,16 @@ public class Query {
 		return null;
 	}
 	
-	/*
-	public Node cypherGetNode(Object person) {
+	public Node cypherGetPerson(Object person) {
 		Result result = cypherQuery(
-				"MATCH (n) " +
-				"WHERE n:PERSON AND n." + Neo4JInserter.IDENTIFIER + " = " + person + " " +
+				"MATCH (n:Person) " +
+				"WHERE n." + Neo4JInserter.IDENTIFIER + " = " + person + " " +
 				"RETURN n");
 		
 		Iterator<Node> nodes = result.columnAs("n");
 		if (nodes.hasNext()) return nodes.next();
 		return null;
 	}
-	*/
 	
 	public List<Relationship> cypherRelationshipsFrom(long from, String relationship, Direction dir) {
 		

@@ -10,9 +10,11 @@ import org.junit.Assert;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.TemporaryFolder;
+import org.neo4j.graphdb.Transaction;
 import org.xml.sax.SAXException;
 
 import smallworld.data.query.Query;
+import smallworld.data.query.QueryCircles;
 
 public class DBLPHandlerTest {
 
@@ -35,6 +37,10 @@ public class DBLPHandlerTest {
 	    	handler.insert();
 	    	
 	    	Query q = new Query(neo4JPath);
+	    	QueryCircles qc = new QueryCircles(q);
 	    	System.out.println(q.cypherGetAllNodes().length);
+	    	try (Transaction tx = q.getGraphDatabaseService().beginTx()) {
+	    		System.out.println(qc.cypherGetCirlce(Interests.INTEREST_NODE_NAME).getProperty("0_intermedi"));
+	    	}
 	}
 }

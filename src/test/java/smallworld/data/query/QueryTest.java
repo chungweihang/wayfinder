@@ -1,23 +1,16 @@
 package smallworld.data.query;
 
-import java.io.BufferedWriter;
-import java.io.FileWriter;
 import java.io.IOException;
-import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
 import org.junit.AfterClass;
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.TemporaryFolder;
-import org.neo4j.graphdb.Direction;
-import org.neo4j.graphdb.Node;
 import org.neo4j.graphdb.Result;
 
-import smallworld.data.RelationshipTypes;
 import smallworld.data.inserter.exp.Neo4JInserter;
 import smallworld.data.inserter.exp.SimpleGraphInserter;
 
@@ -54,6 +47,15 @@ public class QueryTest {
         		"MATCH n-[r]->() " + 
         		"RETURN type(r), count(*);"));
     }
+	
+	@Test
+	public void testGetPerson() {
+		System.out.println(query.cypherGetPerson(1));
+		System.out.println(query.cypherGetPerson(2));
+		System.out.println(query.cypherGetPerson(3));
+	}
+	
+	
 	
 	//System.out.println(query.cypherShortestPathLength(1, 7, "FRIEND", Direction.BOTH, 15));
 	//q.allShortestPathsNodes(0, 426, "FRIEND", 15);

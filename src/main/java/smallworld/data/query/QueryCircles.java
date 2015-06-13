@@ -50,6 +50,17 @@ public class QueryCircles {
 		this(new Query(path));
 	}
 	
+	public Node cypherGetCirlce(String circle) {
+		Result result = query.cypherQuery(
+				"MATCH (n:Circle) " +
+				"WHERE n." + Neo4JInserter.IDENTIFIER + " = \"" + circle + "\" " +
+				"RETURN n");
+		
+		Iterator<Node> nodes = result.columnAs("n");
+		if (nodes.hasNext()) return nodes.next();
+		return null;
+	}
+	
 	public Set<Node> getCircles(Node person) {
 		Set<Node> circles = new HashSet<>();
 		try (Transaction tx = query.getGraphDatabaseService().beginTx()) {

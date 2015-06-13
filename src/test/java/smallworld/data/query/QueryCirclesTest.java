@@ -34,6 +34,13 @@ public class QueryCirclesTest {
 	}
 	
 	@Test
+	public void testGetCircle() {
+		System.out.println(queryCircles.cypherGetCirlce("circle1"));
+		System.out.println(queryCircles.cypherGetCirlce("circle2"));
+		System.out.println(queryCircles.cypherGetCirlce("circle3"));
+	}
+	
+	@Test
 	public void test() {
 		System.out.println(queryCircles.getCircles(query.cypherGetNode(0)));
 		System.out.println(queryCircles.getCircles(query.cypherGetNode(1)));
@@ -45,7 +52,7 @@ public class QueryCirclesTest {
 	}
 	
 	@Test
-	public void testGetCircle() {
+	public void testGetCircleName() {
 		System.out.println(queryCircles.cypherGetCircleNames(5));
 	}
 

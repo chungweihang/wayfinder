@@ -4,22 +4,20 @@
 	<groupId>edu.ncsu.csc</groupId>
 	<artifactId>wayfinder</artifactId>
 	<version>0.0.1-SNAPSHOT</version>
+	
+	<properties>
+		<jdk.version>1.8</jdk.version>
+	</properties>
+	
 	<build>
 		<plugins>
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-compiler-plugin</artifactId>
-				<configuration>
-					<source>1.7</source>
-					<target>1.7</target>
-				</configuration>
-			</plugin>
-			<plugin>
-				<artifactId>maven-compiler-plugin</artifactId>
 				<version>3.1</version>
 				<configuration>
-					<source>1.7</source>
-					<target>1.7</target>
+					<source>${jdk.version}</source>
+					<target>${jdk.version}</target>
 				</configuration>
 			</plugin>
 			<plugin>

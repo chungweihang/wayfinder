@@ -46,6 +46,7 @@ import smallworld.navigation.ShortestNavigation;
 import smallworld.navigation.TrainingNavigation;
 import smallworld.navigation.TraversalNavigation;
 import smallworld.navigation.evaluator.ClassificationEvaluator;
+import smallworld.navigation.evaluator.DBLPInterestEvaluator;
 import smallworld.navigation.evaluator.DegreeEvaluator;
 import smallworld.navigation.evaluator.Evaluator;
 import smallworld.navigation.evaluator.KleinbergEvaluator;
@@ -307,6 +308,8 @@ public class ConcurrentMain implements NavigationCompleteListener {
 			case "facebook":
 			case "facebook-exp":
 			case "dblp":
+			case "dblp-exp":
+			case "dblp-small-exp":
 			case "dblp-inproceedings":
 			case "amazon":
 			case "youtube":
@@ -349,6 +352,7 @@ public class ConcurrentMain implements NavigationCompleteListener {
 			Evaluator<Integer> evaluator = null;
 			if (args[EVALUATOR].equals("Kleinberg")) evaluator = new KleinbergEvaluator(type, dir);
 			else if (args[EVALUATOR].equals("Feature")) evaluator = new MostCommonFeatureEvaluator();
+			else if (args[EVALUATOR].equals("Interests")) evaluator = new DBLPInterestEvaluator();
 			else if (args[EVALUATOR].equals("Degree")) evaluator = new DegreeEvaluator(type, dir);
 			else if (args[EVALUATOR].equals("Circle")) evaluator = new MostCommonCircleEvaluator();
 			else if (args[EVALUATOR].equals("MinCircle")) evaluator = new MinCommonCircleEvaluator();

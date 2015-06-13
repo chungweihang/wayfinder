@@ -3,6 +3,7 @@ package smallworld.data.inserter.exp;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -14,6 +15,8 @@ import org.apache.logging.log4j.Logger;
 import org.xml.sax.Attributes;
 import org.xml.sax.SAXException;
 import org.xml.sax.helpers.DefaultHandler;
+
+import edu.stanford.nlp.util.Maps;
 
 /**
  * This class read DBLP data and import them into Neo4J.
@@ -51,6 +54,8 @@ public class DBLPInserter extends DefaultHandler {
     
     private long totalSizeOfCircles = 0;
     
+    Map<String, Object> interests = new HashMap<>();
+    
     public DBLPInserter(GraphInserter inserter) {
         this.content = new StringBuilder();
         this.coauthors = new ArrayList<String>();
@@ -58,6 +63,8 @@ public class DBLPInserter extends DefaultHandler {
     }
     
     void insert() throws IOException {
+    	// this special circle keeps the counts of all interests
+    	inserter.addCircle(Interests.INTEREST_NODE_NAME, interests);
     	inserter.insert();
     	logger.info("Number of papers: " + numberOfPapers);
     }
@@ -126,6 +133,7 @@ public class DBLPInserter extends DefaultHandler {
 	        		// update interests of coauthor
 	        		Map<String, Object> properties = inserter.getPersonFeatures(coauthor);
 	        		Interests.addInterests(properties, title);
+	        		Interests.addInterests(interests, title);
 	        		inserter.addPerson(coauthor, properties);
 	        	}
         	}
@@ -147,25 +155,6 @@ public class DBLPInserter extends DefaultHandler {
     	//DBLPInserter handler = new DBLPInserter(new CSVInserter("csv/dblp-small", false));
     	final long size = new File(dataPath).length();
     	SAXParserFactory.newInstance().newSAXParser().parse(new File(dataPath), handler);
-    	/*
-    	SAXParserFactory.newInstance().newSAXParser().parse(new FilterInputStream(new FileInputStream(dataPath)) {
-    		double progress = 0d;
-    		double current = 0d;
-    		@Override
-    		public int read(byte[] buffer, int offset, int count) throws IOException {
-    			int c = super.read(buffer, offset, count);
-    			progress += c;
-    			double percentage = progress / size / 100;
-    			if (percentage - current > 0.01d) {
-    				logger.info(String.format("Progress=%.2f%%", percentage));
-    				current = percentage;
-    			}
-    			
-    			//System.out.println(progress + " / " + size);
-    		    return c;
-    		}
-    	}, handler);
-    	*/
     	
     	handler.insert();
     }
