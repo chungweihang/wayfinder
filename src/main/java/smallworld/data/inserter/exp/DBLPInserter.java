@@ -148,12 +148,17 @@ public class DBLPInserter extends DefaultHandler {
         } 
     }
     
+    private static void usage() {
+    	System.out.println(DBLPInserter.class.getName() + " [neo4j_path (under neo4j folder)] [dblp_xml (under data folder)]");
+    	System.exit(0);
+    }
+    
     public static void main(String[] args) throws SAXException, IOException, ParserConfigurationException {
-    	String neo4JPath = "neo4j/dblp-small-exp";
-    	String dataPath = "data/dblp-small.xml";
+    	if (args.length != 2) usage();
+    	String neo4JPath = "neo4j/" + args[0];
+    	String dataPath = "data/" + args[1];
     	DBLPInserter handler = new DBLPInserter(new Neo4JInserter(neo4JPath));
     	//DBLPInserter handler = new DBLPInserter(new CSVInserter("csv/dblp-small", false));
-    	final long size = new File(dataPath).length();
     	SAXParserFactory.newInstance().newSAXParser().parse(new File(dataPath), handler);
     	
     	handler.insert();
