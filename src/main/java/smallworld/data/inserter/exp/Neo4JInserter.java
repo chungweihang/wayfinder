@@ -60,6 +60,7 @@ public class Neo4JInserter implements GraphInserter {
 	// statistics
 	int maxCircle = 0; // need to set explicitly
 	long totalCircleSize = 0;
+	boolean enforceUniqueRelationships = true;
 
 	/**
 	 * Initialize Neo4JInserter with the path of Neo4J database.
@@ -265,12 +266,17 @@ public class Neo4JInserter implements GraphInserter {
 	// return false if it already exists
 	private boolean addRelationship(long fromNodeId, long toNodeId,
 			RelationshipType type) {
-		if (!relationshipExists(type, fromNodeId, toNodeId)) {
-			// relationship does not exist, create new relationship
+		if (enforceUniqueRelationships) {
+			if (!relationshipExists(type, fromNodeId, toNodeId)) {
+				// relationship does not exist, create new relationship
+				inserter.createRelationship(fromNodeId, toNodeId, type, null);
+				return true;
+			} else {
+				return false;
+			}
+		} else {
 			inserter.createRelationship(fromNodeId, toNodeId, type, null);
 			return true;
-		} else {
-			return false;
 		}
 	}
 
