@@ -216,7 +216,7 @@ public class Neo4JInserter implements GraphInserter {
 			// always from node to circle
 			if (addRelationship(personToIds.get(person),
 					circleToIds.get(circleName),
-					RelationshipTypes.CIRCLE.type())) {
+					RelationshipTypes.CIRCLE.type()) && enforceUniqueRelationships) {
 				circleEdges.put(personToIds.get(person),
 						circleToIds.get(circleName));
 				totalCircleSize++;
@@ -299,7 +299,7 @@ public class Neo4JInserter implements GraphInserter {
 					+ " does not exist!");
 		}
 		if (addRelationship(personToIds.get(fromNode), personToIds.get(toNode),
-				RelationshipTypes.FRIEND.type())) {
+				RelationshipTypes.FRIEND.type()) && enforceUniqueRelationships) {
 			friendEdges.put(personToIds.get(fromNode), personToIds.get(toNode));
 		}
 	}
