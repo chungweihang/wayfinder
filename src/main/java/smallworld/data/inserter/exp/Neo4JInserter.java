@@ -9,12 +9,10 @@ import org.apache.logging.log4j.Logger;
 import org.neo4j.graphdb.RelationshipType;
 import org.neo4j.unsafe.batchinsert.BatchInserter;
 import org.neo4j.unsafe.batchinsert.BatchInserters;
+import org.neo4j.unsafe.batchinsert.BatchRelationship;
 
 import smallworld.data.RelationshipTypes;
 import smallworld.util.Utils;
-
-import com.google.common.collect.HashMultimap;
-import com.google.common.collect.Multimap;
 
 /**
  * Neo4JInserter inserts a social network graph into Neo4J database. A social
@@ -46,10 +44,10 @@ public class Neo4JInserter implements GraphInserter {
 	final boolean isFriendshipDirected;
 
 	// keep track of who is friend of whom
-	final Multimap<Long, Long> friendEdges;
+	//final Multimap<Long, Long> friendEdges;
 
 	// keep track of who belongs to which circles
-	final Multimap<Long, Long> circleEdges;
+	//final Multimap<Long, Long> circleEdges;
 
 	// keep track of node IDs of people
 	final Map<Object, Long> personToIds;
@@ -100,8 +98,8 @@ public class Neo4JInserter implements GraphInserter {
 
 		this.isFriendshipDirected = isFriendshipDirected;
 
-		friendEdges = HashMultimap.create();
-		circleEdges = HashMultimap.create();
+		//friendEdges = HashMultimap.create();
+		//circleEdges = HashMultimap.create();
 		personToIds = new HashMap<>();
 		circleToIds = new HashMap<>();
 	}
@@ -114,9 +112,9 @@ public class Neo4JInserter implements GraphInserter {
 	 */
 	public void insert() throws IOException {
 		inserter.shutdown();
-
+		
 		logger.info("Number of nodes: " + personToIds.size());
-		logger.info("Number of friendships: " + friendEdges.size());
+		//logger.info("Number of friendships: " + friendEdges.size());
 		logger.info("Number of circles: " + circleToIds.size());
 		logger.info("Max size of circle: " + maxCircle);
 		logger.info("Average circle size: " + ((double) totalCircleSize)
@@ -163,7 +161,11 @@ public class Neo4JInserter implements GraphInserter {
 	@Override
 	public boolean hasCirlce(Object person, String circleName) {
 		if (personExists(person) && circleExists(circleName)) {
+			/*
 			return circleEdges.containsEntry(personToIds.get(person),
+					circleToIds.get(circleName));
+					*/
+			return relationshipExists(RelationshipTypes.CIRCLE.type(), personToIds.get(person),
 					circleToIds.get(circleName));
 		}
 
@@ -217,8 +219,11 @@ public class Neo4JInserter implements GraphInserter {
 			if (addRelationship(personToIds.get(person),
 					circleToIds.get(circleName),
 					RelationshipTypes.CIRCLE.type()) && enforceUniqueRelationships) {
+				/*
 				circleEdges.put(personToIds.get(person),
 						circleToIds.get(circleName));
+						*/
+				logger.info(person + " is now in circle:" + circleName);
 				totalCircleSize++;
 			}
 		} else {
@@ -300,7 +305,8 @@ public class Neo4JInserter implements GraphInserter {
 		}
 		if (addRelationship(personToIds.get(fromNode), personToIds.get(toNode),
 				RelationshipTypes.FRIEND.type()) && enforceUniqueRelationships) {
-			friendEdges.put(personToIds.get(fromNode), personToIds.get(toNode));
+			//friendEdges.put(personToIds.get(fromNode), personToIds.get(toNode));
+			logger.info(fromNode + " and " + toNode + " are friends");
 		}
 	}
 
@@ -311,25 +317,35 @@ public class Neo4JInserter implements GraphInserter {
 	 * 
 	 * For circle relationship, always check "from (person) => to (circle)."
 	 */
-	private boolean relationshipExists(RelationshipType type, long fromNodeId,
-			long toNodeId) {
-		if (type == RelationshipTypes.FRIEND.type()) {
-			if (isFriendshipDirected) {
-				// directed
-				return friendEdges.containsEntry(fromNodeId, toNodeId);
-			} else {
-				// undirected
-				return friendEdges.containsEntry(fromNodeId, toNodeId)
-						|| friendEdges.containsEntry(toNodeId, fromNodeId);
+	private boolean relationshipExists(RelationshipType type, long fromNodeId, long toNodeId) {
+		if (type == RelationshipTypes.CIRCLE.type()) {
+			// direction always person => circle
+			for (Long relId : inserter.getRelationshipIds(fromNodeId)) {
+				BatchRelationship rel = inserter.getRelationshipById(relId);
+				if (rel.getType().name().equals(RelationshipTypes.CIRCLE.type().name()) && rel.getEndNode() == toNodeId) {
+					return true;
+				}
 			}
-		} else if (type == RelationshipTypes.CIRCLE.type()) {
-			// for circle, it is always node => circle
-			return circleEdges.containsEntry(fromNodeId, toNodeId);
-		} else {
-			throw new IllegalArgumentException("Unknown relation type: "
-					+ type.name());
+		} else if (type == RelationshipTypes.FRIEND.type()) {
+			if (isFriendshipDirected) {
+				for (Long relId : inserter.getRelationshipIds(fromNodeId)) {
+					BatchRelationship rel = inserter.getRelationshipById(relId);
+					if (rel.getType().name().equals(RelationshipTypes.FRIEND.type().name()) && rel.getEndNode() == toNodeId) {
+						return true;
+					}
+				}
+			} else {
+				for (Long relId : inserter.getRelationshipIds(fromNodeId)) {
+					BatchRelationship rel = inserter.getRelationshipById(relId);
+					if (rel.getType().name().equals(RelationshipTypes.FRIEND.type().name())
+							&& (rel.getEndNode() == toNodeId || rel.getStartNode() == toNodeId)) {
+						return true;
+					}
+				}
+			}
 		}
-
+		
+		return false;
 	}
 	
 	@Override

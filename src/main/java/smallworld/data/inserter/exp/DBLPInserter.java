@@ -16,8 +16,6 @@ import org.xml.sax.Attributes;
 import org.xml.sax.SAXException;
 import org.xml.sax.helpers.DefaultHandler;
 
-import edu.stanford.nlp.util.Maps;
-
 /**
  * This class read DBLP data and import them into Neo4J.
  * 

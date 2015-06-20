@@ -71,7 +71,7 @@ public class Query {
 	public Node cypherGetPerson(Object person) {
 		Result result = cypherQuery(
 				"MATCH (n:Person) " +
-				"WHERE n." + Neo4JInserter.IDENTIFIER + " = " + person + " " +
+				"WHERE n." + Neo4JInserter.IDENTIFIER + " = '" + person + "' " +
 				"RETURN n");
 		
 		Iterator<Node> nodes = result.columnAs("n");
