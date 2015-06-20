@@ -223,7 +223,7 @@ public class Neo4JInserter implements GraphInserter {
 				circleEdges.put(personToIds.get(person),
 						circleToIds.get(circleName));
 						*/
-				logger.info(person + " is now in circle:" + circleName);
+				logger.trace(person + " is now in circle:" + circleName);
 				totalCircleSize++;
 			}
 		} else {
@@ -306,7 +306,7 @@ public class Neo4JInserter implements GraphInserter {
 		if (addRelationship(personToIds.get(fromNode), personToIds.get(toNode),
 				RelationshipTypes.FRIEND.type()) && enforceUniqueRelationships) {
 			//friendEdges.put(personToIds.get(fromNode), personToIds.get(toNode));
-			logger.info(fromNode + " and " + toNode + " are friends");
+			logger.trace(fromNode + " and " + toNode + " are friends");
 		}
 	}
 
