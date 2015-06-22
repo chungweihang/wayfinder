@@ -156,7 +156,7 @@ public class DBLPInserter extends DefaultHandler {
     	String neo4JPath = "neo4j/" + args[0];
     	String dataPath = "data/" + args[1];
     	Neo4JInserter inserter = new Neo4JInserter(neo4JPath);
-    	inserter.enforceUniqueRelationships = false;
+    	inserter.enforceUniqueRelationships = true;
     	DBLPInserter handler = new DBLPInserter(inserter);
     	//DBLPInserter handler = new DBLPInserter(new CSVInserter("csv/dblp-small", false));
     	SAXParserFactory.newInstance().newSAXParser().parse(new File(dataPath), handler);
