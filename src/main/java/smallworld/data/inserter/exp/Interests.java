@@ -21,7 +21,7 @@ public class Interests {
 	static final StopList stoplist = StopList.INSTANCE;
 	static Node INTEREST_NODE = null;
 	
-	public static void addInterests(Map<String, Object> interests, String title) {
+	public static Map<String, Object> addInterests(Map<String, Object> interests, String title) {
 		List<String> words = new ArrayList<>();
 		// tokenize
 		String[] chunks = title.split("\\W+");
@@ -48,6 +48,8 @@ public class Interests {
 				interests.put(word, Integer.valueOf(1));
 			}
 		}
+		
+		return interests;
 	}
 	
 	public static double proximity(Node personA, Node personB) {

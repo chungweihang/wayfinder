@@ -13,7 +13,6 @@ import smallworld.data.inserter.msacademy.MSPaper;
 import smallworld.data.inserter.msacademy.MSPaperAuthor;
 import smallworld.data.inserter.msacademy.MSVenue;
 
-import com.google.common.collect.Multimap;
 import com.google.common.collect.Table;
 
 public class MSAcademyInserter {
@@ -26,9 +25,8 @@ public class MSAcademyInserter {
 	Table<Integer, Long, MSPaperAuthor> paperAuthorTable;
 	Map<Integer, MSVenue> journalMap;
 	Map<Integer, MSVenue> conferenceMap;
-	Multimap<String, Long> circleAuthorMap;
 	
-	private MSAcademyInserter(String neo4jPath, String dataPath) throws IOException {
+	private MSAcademyInserter(String dataPath, GraphInserter inserter) throws IOException {
 		paperMap = MSPaper.load(dataPath + "/Paper.csv");
 		journalMap = MSVenue.load(dataPath + "/Journal.csv", MSVenue.Type.JOURNAL);
 		conferenceMap = MSVenue.load(dataPath + "/Conference.csv", MSVenue.Type.CONFERENCE);
@@ -41,8 +39,6 @@ public class MSAcademyInserter {
 				.append(conferenceMap.size()).append(" conferences.").toString());
 		MSPaperAuthor.statistics();
 		
-        inserter = new Neo4JInserter(neo4jPath);
-        
         int counter = 0;
         for (Integer paperId : paperMap.keySet()) {
         	
@@ -59,20 +55,18 @@ public class MSAcademyInserter {
         	List<MSPaperAuthor> authors = new ArrayList<MSPaperAuthor>(paperAuthorTable.row(paperId).values());
         	for (int i = 0; i < authors.size(); i++) {
         		MSPaperAuthor author = authors.get(i);
-        		this.createAuthor(author);
-        		// set "venue" and "venue-year" as circles
+        		this.createAuthor(author, paper.getTitle());
+        		// set "venue-year" as circles
         		if (venue != null && venue.getFullName().length() > 0) {
-        			inserter.setCircle(venue.getFullName(), author.getAuthorId());
         			inserter.setCircle(venue.getFullName() + ":" + paper.getYear(), author.getAuthorId());
         		} 
         		for (int j = i+1; j < authors.size(); j++) {
         			MSPaperAuthor coauthor = authors.get(j);
-        			this.createAuthor(coauthor);
+        			this.createAuthor(coauthor, paper.getTitle());
         			inserter.addFriend(author.getAuthorId(), coauthor.getAuthorId());
         			// set "venue" and "venue-year" as circles
         			if (venue != null && venue.getFullName().length() > 0) {
-        				inserter.setCircle(venue.getFullName(), coauthor.getAuthorId());
-            			inserter.setCircle(venue.getFullName() + ":" + paper.getYear(), coauthor.getAuthorId());
+        				inserter.setCircle(venue.getFullName() + ":" + paper.getYear(), coauthor.getAuthorId());
             		}
         		}
         	}
@@ -84,16 +78,16 @@ public class MSAcademyInserter {
     }
 	
 	// Put affiliation as circles
-	private void createAuthor(MSPaperAuthor author) {
-		if (inserter.personExists(author.getAuthorId())) return;
-		Map<String, Object> properties = new HashMap<String, Object>();
-		properties.put("name", author.getName());
-		properties.put("affiliation", author.getAffiliation());
-		inserter.addPerson(author.getAuthorId(), properties);
-	}
-	
-	public static void insert(String neo4jPath, String dataPath) throws IOException {
-		new MSAcademyInserter(neo4jPath, dataPath);
+	private void createAuthor(MSPaperAuthor author, String paperTitle) {
+		Map<String, Object> interests;
+		if (inserter.personExists(author.getAuthorId())) {
+			interests = inserter.getPersonFeatures(author.getAuthorId());
+		} else {
+			interests = new HashMap<>();
+		}
+		inserter.addPerson(author.getAuthorId(), Interests.addInterests(interests, paperTitle));
+		inserter.addCircle(author.getAffiliation());
+		inserter.setCircle(author.getAffiliation(), author.getAuthorId());
 	}
 	
 	/**
@@ -101,7 +95,9 @@ public class MSAcademyInserter {
 	 * @throws IOException 
 	 */
 	public static void main(String[] args) throws IOException {
-		insert("neo4j/msacademy-circlesize", "data/msacademy");
+		Neo4JInserter inserter = new Neo4JInserter("neo4j/msacademy-exp", false);
+		inserter.enforceUniqueRelationships = true;
+		new MSAcademyInserter("data/msacademy", inserter);
 	}
 
 }
