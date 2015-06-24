@@ -19,7 +19,7 @@ public class MSAcademyInserter {
 	
 	private static final Logger logger = LogManager.getLogger();
 
-	Neo4JInserter inserter;
+	GraphInserter inserter;
 	
 	Map<Integer, MSPaper> paperMap;
 	Table<Integer, Long, MSPaperAuthor> paperAuthorTable;
@@ -27,6 +27,8 @@ public class MSAcademyInserter {
 	Map<Integer, MSVenue> conferenceMap;
 	
 	private MSAcademyInserter(String dataPath, GraphInserter inserter) throws IOException {
+		this.inserter = inserter;
+		
 		paperMap = MSPaper.load(dataPath + "/Paper.csv");
 		journalMap = MSVenue.load(dataPath + "/Journal.csv", MSVenue.Type.JOURNAL);
 		conferenceMap = MSVenue.load(dataPath + "/Conference.csv", MSVenue.Type.CONFERENCE);
