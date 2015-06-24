@@ -59,16 +59,19 @@ public class MSAcademyInserter {
         		MSPaperAuthor author = authors.get(i);
         		this.createAuthor(author, paper.getTitle());
         		// set "venue-year" as circles
+        		String circle = null;
         		if (venue != null && venue.getFullName().length() > 0) {
-        			inserter.setCircle(venue.getFullName() + ":" + paper.getYear(), author.getAuthorId());
+        			circle = venue.getFullName() + ":" + paper.getYear();
+        			inserter.addCircle(circle);
+        			inserter.setCircle(circle, author.getAuthorId());
         		} 
         		for (int j = i+1; j < authors.size(); j++) {
         			MSPaperAuthor coauthor = authors.get(j);
         			this.createAuthor(coauthor, paper.getTitle());
         			inserter.addFriend(author.getAuthorId(), coauthor.getAuthorId());
         			// set "venue" and "venue-year" as circles
-        			if (venue != null && venue.getFullName().length() > 0) {
-        				inserter.setCircle(venue.getFullName() + ":" + paper.getYear(), coauthor.getAuthorId());
+        			if (circle != null) {
+        				inserter.setCircle(circle, coauthor.getAuthorId());
             		}
         		}
         	}
@@ -76,7 +79,7 @@ public class MSAcademyInserter {
         
         inserter.insert();
         
-        System.out.println("paper count: " + paperMap.size());
+        logger.info("paper count: " + paperMap.size());
     }
 	
 	// Put affiliation as circles
