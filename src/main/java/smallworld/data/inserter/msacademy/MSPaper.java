@@ -8,8 +8,12 @@ import java.util.Map;
 
 import org.apache.commons.csv.CSVFormat;
 import org.apache.commons.csv.CSVRecord;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 public class MSPaper {
+
+	private static final Logger logger = LogManager.getLogger();
 
 	private static int ID = 0;
 	private static int TITLE = 1;
@@ -63,7 +67,7 @@ public class MSPaper {
 				.append(" | ").append(conferenceId).append(" | ").append(journalId).append(" | ").append(keyword).toString();
 	}
 	
-	public static Map<Integer, MSPaper> load(String filename) {
+	public static Map<Integer, MSPaper> parse(String filename) {
 		Map<Integer, MSPaper> papers = new HashMap<Integer, MSPaper>();
 		
 		Iterable<CSVRecord> records;
@@ -76,7 +80,7 @@ public class MSPaper {
 							Integer.parseInt(record.get(CONFERENCE_ID)), Integer.parseInt(record.get(JOURNAL_ID)), record.get(KEYWORD));
 					papers.put(paper.id, paper);
 				} catch (NumberFormatException e) {
-					System.err.println("skipping: " + record);
+					logger.error("skipping: " + record + " " + e.getMessage());
 				}
 			}
 		} catch (FileNotFoundException e) {
@@ -88,41 +92,8 @@ public class MSPaper {
 		return papers;
 	}
 	
-	/*
-	public static Map<Integer, MSPaper> load(String filename) {
-		BufferedReader reader = null; 
-		Map<Integer, MSPaper> papers = new HashMap<Integer, MSPaper>();
-		
-		try {
-			reader = new BufferedReader(new FileReader(filename));
-			
-			// skip first line
-			reader.readLine();
-			
-			for (String line = reader.readLine(); line != null; line = reader.readLine()) {
-				
-				String[] chunks = line.split(",(?=([^\"]*\"[^\"]*\")*[^\"]*$)", -1);
-				if (chunks.length != 6) continue;
-				MSPaper paper = new MSPaper(Integer.parseInt(chunks[ID]), chunks[TITLE], chunks[YEAR],
-						Integer.parseInt(chunks[CONFERENCE_ID]), Integer.parseInt(chunks[JOURNAL_ID]), chunks[KEYWORD]);
-				papers.put(paper.id, paper);
-			}
-		} catch (FileNotFoundException e) {
-			e.printStackTrace();
-		} catch (IOException e) {
-			e.printStackTrace();
-		} finally {
-			if (reader != null) {
-				try { reader.close(); } catch (Exception e) {}
-			}
-		}
-		
-		return papers;
-	}
-	*/
-	
 	public static void main(String[] args) {
-		Map<Integer, MSPaper> papers = load("data/msacademy/Paper.csv");
+		Map<Integer, MSPaper> papers = parse("data/msacademy/Paper.csv");
 		for (MSPaper paper : papers.values()) {
 			System.out.println(paper);
 		}

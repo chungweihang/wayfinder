@@ -8,8 +8,12 @@ import java.util.Map;
 
 import org.apache.commons.csv.CSVFormat;
 import org.apache.commons.csv.CSVRecord;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 public class MSAuthor {
+
+	private static final Logger logger = LogManager.getLogger();
 
 	private static int ID = 0;
 	private static int NAME = 1;
@@ -42,38 +46,7 @@ public class MSAuthor {
 		return new StringBuilder("[MSAuthor] ").append(id).append(" | ").append(name).append(" | ").append(affiliation).toString();
 	}
 	
-	/*
-	public static Map<Integer, MSAuthor> load(String filename) {
-		BufferedReader reader = null; 
-		Map<Integer, MSAuthor> authors = new HashMap<Integer, MSAuthor>();
-		
-		try {
-			reader = new BufferedReader(new FileReader(filename));
-			
-			// skip first line
-			reader.readLine();
-			
-			for (String line = reader.readLine(); line != null; line = reader.readLine()) {
-				
-				String[] chunks = line.split(",", -1);
-				MSAuthor author = new MSAuthor(Integer.parseInt(chunks[ID]), chunks[NAME], chunks[AFFILIATION]);
-				authors.put(author.id, author);
-			}
-		} catch (FileNotFoundException e) {
-			e.printStackTrace();
-		} catch (IOException e) {
-			e.printStackTrace();
-		} finally {
-			if (reader != null) {
-				try { reader.close(); } catch (Exception e) {}
-			}
-		}
-		
-		return authors;
-	}
-	*/
-	
-	public static Map<Long, MSAuthor> load(String filename) {
+	public static Map<Long, MSAuthor> parse(String filename) {
 		Map<Long, MSAuthor> authors = new HashMap<Long, MSAuthor>();
 		
 		Iterable<CSVRecord> records;
@@ -85,7 +58,7 @@ public class MSAuthor {
 					MSAuthor author = new MSAuthor(Long.parseLong(record.get(ID)), record.get(NAME), record.get(AFFILIATION));
 					authors.put(author.id, author);
 				} catch (NumberFormatException e) {
-					System.err.println("skipping: " + record);
+					logger.error("skipping: " + record + " " + e.getMessage());
 				}
 			}
 		} catch (FileNotFoundException e) {
@@ -98,7 +71,7 @@ public class MSAuthor {
 	}
 	
 	public static void main(String[] args) {
-		Map<Long, MSAuthor> authors = load("data/msacademy/Author.csv");
+		Map<Long, MSAuthor> authors = parse("data/msacademy/Author.csv");
 		for (MSAuthor author : authors.values()) {
 			System.out.println(author);
 		}

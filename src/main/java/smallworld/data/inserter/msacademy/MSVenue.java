@@ -8,8 +8,12 @@ import java.util.Map;
 
 import org.apache.commons.csv.CSVFormat;
 import org.apache.commons.csv.CSVRecord;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 public class MSVenue {
+
+	private static final Logger logger = LogManager.getLogger();
 
 	private static final int ID = 0;
 	private static final int SHORT_NAME = 1;
@@ -60,7 +64,7 @@ public class MSVenue {
 				.append(" | ").append(type.name()).toString();
 	}
 
-	public static Map<Integer, MSVenue> load(String filename, Type type) {
+	public static Map<Integer, MSVenue> parse(String filename, Type type) {
 		Map<Integer, MSVenue> venues = new HashMap<Integer, MSVenue>();
 		
 		Iterable<CSVRecord> records;
@@ -73,7 +77,7 @@ public class MSVenue {
 							Integer.parseInt(record.get(ID)), record.get(SHORT_NAME), record.get(FULL_NAME), record.get(URL), type);
 					venues.put(venue.id, venue);
 				} catch (NumberFormatException e) {
-					System.err.println("skipping: " + record);
+					logger.error("skipping: " + record + " " + e.getMessage());
 				}
 			}
 		} catch (FileNotFoundException e) {
@@ -85,47 +89,11 @@ public class MSVenue {
 		return venues;
 	}
 	
-	/*
-	public static Map<Integer, MSVenue> load(String filename, Type type) {
-		BufferedReader reader = null; 
-		Map<Integer, MSVenue> venues = new HashMap<Integer, MSVenue>();
-		
-		try {
-			reader = new BufferedReader(new FileReader(filename));
-			
-			// skip first line
-			reader.readLine();
-			
-			for (String line = reader.readLine(); line != null; line = reader.readLine()) {
-				
-				String[] chunks = line.split(",", -1);
-				
-				if (chunks.length != 4) continue;
-				
-				MSVenue venue = new MSVenue(
-						Integer.parseInt(chunks[ID]), chunks[SHORT_NAME], chunks[FULL_NAME], chunks[URL], type);
-				venues.put(venue.id, venue);
-			}
-		} catch (FileNotFoundException e) {
-			e.printStackTrace();
-		} catch (IOException e) {
-			e.printStackTrace();
-		} finally {
-			if (reader != null) {
-				try { reader.close(); } catch (Exception e) {}
-			}
-		}
-		
-		return venues;
-	}
-	*/
-	
 	/**
 	 * @param args
 	 */
 	public static void main(String[] args) {
-		Map<Integer, MSVenue> venues = load("data/msacademy/Conference.csv", Type.CONFERENCE);
-		//Map<Integer, MSVenue> venues = load("data/msacademy/Journal.csv", Type.JOURNAL);
+		Map<Integer, MSVenue> venues = parse("data/msacademy/Conference.csv", Type.CONFERENCE);
 		for (MSVenue venue : venues.values()) {
 			System.out.println(venue);
 		}

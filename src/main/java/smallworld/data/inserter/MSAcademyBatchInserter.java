@@ -44,12 +44,12 @@ public class MSAcademyBatchInserter {
 	
 	private MSAcademyBatchInserter(String neo4jPath, String dataPath) {
 		//authorMap = MSAuthor.load(dataPath + "/Author.csv");
-		paperMap = MSPaper.load(dataPath + "/Paper.csv");
-		journalMap = MSVenue.load(dataPath + "/Journal.csv", MSVenue.Type.JOURNAL);
-		conferenceMap = MSVenue.load(dataPath + "/Conference.csv", MSVenue.Type.CONFERENCE);
+		paperMap = MSPaper.parse(dataPath + "/Paper.csv");
+		journalMap = MSVenue.parse(dataPath + "/Journal.csv", MSVenue.Type.JOURNAL);
+		conferenceMap = MSVenue.parse(dataPath + "/Conference.csv", MSVenue.Type.CONFERENCE);
 		//authorMultimap = MSPaperAuthor.load(dataPath + "/PaperAuthor.csv");
 		//paperAuthorMultimap = MSPaperAuthorCommonsCSV.load(dataPath + "/PaperAuthor.csv");
-		paperAuthorTable = MSPaperAuthor.load(dataPath + "/PaperAuthor.csv", paperMap, journalMap, conferenceMap);
+		paperAuthorTable = MSPaperAuthor.parse(dataPath + "/PaperAuthor.csv", paperMap, journalMap, conferenceMap);
 		
 		System.out.println(new StringBuilder("data loaded: ")
 				.append(paperMap.size()).append(" papers ")

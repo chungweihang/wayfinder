@@ -29,10 +29,10 @@ public class MSAcademyInserter {
 	private MSAcademyInserter(String dataPath, GraphInserter inserter) throws IOException {
 		this.inserter = inserter;
 		
-		paperMap = MSPaper.load(dataPath + "/Paper.csv");
-		journalMap = MSVenue.load(dataPath + "/Journal.csv", MSVenue.Type.JOURNAL);
-		conferenceMap = MSVenue.load(dataPath + "/Conference.csv", MSVenue.Type.CONFERENCE);
-		paperAuthorTable = MSPaperAuthor.load(dataPath + "/PaperAuthor.csv", paperMap, journalMap, conferenceMap);
+		paperMap = MSPaper.parse(dataPath + "/Paper.csv");
+		journalMap = MSVenue.parse(dataPath + "/Journal.csv", MSVenue.Type.JOURNAL);
+		conferenceMap = MSVenue.parse(dataPath + "/Conference.csv", MSVenue.Type.CONFERENCE);
+		paperAuthorTable = MSPaperAuthor.parse(dataPath + "/PaperAuthor.csv", paperMap, journalMap, conferenceMap);
 		
 		logger.info(new StringBuilder("data loaded: ")
 				.append(paperMap.size()).append(" papers ")
