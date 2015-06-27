@@ -1,12 +1,15 @@
 package smallworld.data.inserter.exp;
 
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import javax.swing.event.ChangeEvent;
+import javax.swing.event.ChangeListener;
 import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.parsers.SAXParserFactory;
 
@@ -15,6 +18,8 @@ import org.apache.logging.log4j.Logger;
 import org.xml.sax.Attributes;
 import org.xml.sax.SAXException;
 import org.xml.sax.helpers.DefaultHandler;
+
+import smallworld.util.ProgressInputStream;
 
 /**
  * This class read DBLP data and import them into Neo4J.
@@ -155,11 +160,22 @@ public class DBLPInserter extends DefaultHandler {
     	if (args.length != 2) usage();
     	String neo4JPath = "neo4j/" + args[0];
     	String dataPath = "data/" + args[1];
-    	Neo4JInserter inserter = new Neo4JInserter(neo4JPath);
+    	Neo4JInserter.CACHE_MAX_SIZE = 100000;
+    	Neo4JInserter inserter = new Neo4JInserter(neo4JPath, false);
     	inserter.enforceUniqueRelationships = true;
-    	DBLPInserter handler = new DBLPInserter(inserter);
-    	//DBLPInserter handler = new DBLPInserter(new CSVInserter("csv/dblp-small", false));
-    	SAXParserFactory.newInstance().newSAXParser().parse(new File(dataPath), handler);
+    	final DBLPInserter handler = new DBLPInserter(inserter);
+    	
+    	final File file = new File(dataPath);
+    	ProgressInputStream is = new ProgressInputStream(new FileInputStream(file), file.length(), new ChangeListener() {
+    		@Override
+			public void stateChanged(ChangeEvent e) {
+    			ProgressInputStream is = (ProgressInputStream) e.getSource();
+				logger.info("progress: " + is.getPercentage());
+			}
+    	});
+    	
+    	//SAXParserFactory.newInstance().newSAXParser().parse(new File(dataPath), handler);
+    	SAXParserFactory.newInstance().newSAXParser().parse(is, handler);
     	
     	handler.insert();
     }

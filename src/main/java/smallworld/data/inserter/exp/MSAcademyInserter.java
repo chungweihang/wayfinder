@@ -100,6 +100,7 @@ public class MSAcademyInserter {
 	 * @throws IOException 
 	 */
 	public static void main(String[] args) throws IOException {
+		Neo4JInserter.CACHE_MAX_SIZE = 100000;
 		Neo4JInserter inserter = new Neo4JInserter("neo4j/msacademy-exp", false);
 		inserter.enforceUniqueRelationships = true;
 		new MSAcademyInserter("data/msacademy", inserter);

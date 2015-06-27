@@ -2,7 +2,10 @@ package smallworld.data.inserter.exp;
 
 import java.io.IOException;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Map;
+import java.util.Set;
+import java.util.concurrent.ExecutionException;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -13,6 +16,10 @@ import org.neo4j.unsafe.batchinsert.BatchRelationship;
 
 import smallworld.data.RelationshipTypes;
 import smallworld.util.Utils;
+
+import com.google.common.cache.CacheBuilder;
+import com.google.common.cache.CacheLoader;
+import com.google.common.cache.LoadingCache;
 
 /**
  * Neo4JInserter inserts a social network graph into Neo4J database. A social
@@ -37,6 +44,7 @@ public class Neo4JInserter implements GraphInserter {
 
 	private static final Logger logger = LogManager.getLogger();
 	public static final String IDENTIFIER = "DATASET_IDENTIFIER";
+	public static long CACHE_MAX_SIZE = 10000;
 	
 	final BatchInserter inserter;
 
@@ -54,6 +62,8 @@ public class Neo4JInserter implements GraphInserter {
 
 	// keep track of node IDs of circles
 	final Map<String, Long> circleToIds;
+	
+	final LoadingCache<Long, Set<Long>> friends;
 
 	// statistics
 	int maxCircle = 0; // need to set explicitly
@@ -102,6 +112,30 @@ public class Neo4JInserter implements GraphInserter {
 		//circleEdges = HashMultimap.create();
 		personToIds = new HashMap<>();
 		circleToIds = new HashMap<>();
+		
+		friends = CacheBuilder.newBuilder()
+				.maximumSize(CACHE_MAX_SIZE)
+				.build(
+						new CacheLoader<Long, Set<Long>>() {
+							public Set<Long> load(Long id) {
+								Set<Long> friends = new HashSet<>();
+								for (Long relId : inserter.getRelationshipIds(id)) {
+									BatchRelationship rel = inserter.getRelationshipById(relId);
+									if (rel.getType().name().equals(RelationshipTypes.FRIEND.type().name())) {
+										if (isFriendshipDirected) {
+											friends.add(rel.getEndNode());
+										} else {
+											if (rel.getStartNode() == id) {
+												friends.add(rel.getEndNode());
+											} else {
+												friends.add(rel.getStartNode());
+											}
+										}
+									}
+								}
+								return friends;
+							}
+						});
 	}
 
 	/**
@@ -309,7 +343,7 @@ public class Neo4JInserter implements GraphInserter {
 			logger.trace(fromNode + " and " + toNode + " are friends");
 		}
 	}
-
+	
 	/*
 	 * Check if a relationship exists. For friendship, if it is bidirectional,
 	 * check both "from => to" and "to => from." If friendship is directional,
@@ -327,6 +361,7 @@ public class Neo4JInserter implements GraphInserter {
 				}
 			}
 		} else if (type == RelationshipTypes.FRIEND.type()) {
+			/*
 			if (isFriendshipDirected) {
 				for (Long relId : inserter.getRelationshipIds(fromNodeId)) {
 					BatchRelationship rel = inserter.getRelationshipById(relId);
@@ -342,6 +377,13 @@ public class Neo4JInserter implements GraphInserter {
 						return true;
 					}
 				}
+			}
+			*/
+			// Use cache
+			try {
+				return friends.get(fromNodeId).contains(toNodeId);
+			} catch (ExecutionException e) {
+				logger.error(e);
 			}
 		}
 		
