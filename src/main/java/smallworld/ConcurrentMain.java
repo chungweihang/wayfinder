@@ -20,13 +20,13 @@ import java.util.concurrent.Future;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicLong;
 import java.util.concurrent.atomic.AtomicReference;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 import libsvm.svm;
 import libsvm.svm_model;
 
 import org.apache.commons.lang3.time.DurationFormatUtils;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.neo4j.graphalgo.GraphAlgoFactory;
 import org.neo4j.graphalgo.PathFinder;
 import org.neo4j.graphdb.Direction;
@@ -66,7 +66,7 @@ import weka.core.converters.ArffSaver;
 
 public class ConcurrentMain implements NavigationCompleteListener {
 	
-	private static final Logger logger = Logger.getLogger(ConcurrentMain.class.getName());
+	private static final Logger logger = LogManager.getLogger();
 
 	// For statistics
 	final AtomicInteger numberOfPairsNavigated = new AtomicInteger();
@@ -97,14 +97,15 @@ public class ConcurrentMain implements NavigationCompleteListener {
 	 * @throws IOException 
 	 */
 	public ConcurrentMain(PathFinder<Path> nav, String neo4jPath, int numberOfPairs, int randomSeed, String log) throws IOException {
-		//Query q = new Query(neo4jPath);
-		Query q = Query.getInstance();
+		Query q = new Query(neo4jPath);
+		//Query q = Query.getInstance();
 		
 		long time = System.currentTimeMillis();
 		calendar.set(Calendar.getInstance());
 		
 		// sorted node id
 		List<Long> nodeIds = Arrays.asList(q.cypherGetAllNodes());
+		System.out.println("number of nodes: "+ nodeIds.size());
 		
 		ExecutorService executor = Executors.newFixedThreadPool(NUMBER_OF_THREADS);
 		//List<Future<Path>> list = new ArrayList<Future<Path>>();
@@ -122,6 +123,7 @@ public class ConcurrentMain implements NavigationCompleteListener {
 		FileWriter writer = new FileWriter(log, true);
 		
 		List<Pair<Long, Long>> pairs = generateListOfPairs(nodeIds, numberOfPairsToBeNavigated, new Random(randomSeed));
+		System.out.println("number of pairs: " + pairs.size());
 						
 		for (int i = 0; i < numberOfPairsToBeNavigated; i++) {
 			
@@ -229,7 +231,7 @@ public class ConcurrentMain implements NavigationCompleteListener {
 			}
 		} catch (FileNotFoundException ignored) {
 		} catch (IOException e) {
-			logger.log(Level.SEVERE, "Error reading log file: " + file);
+			logger.error("Error reading log file: " + file);
 			e.printStackTrace();
 		} 
 		

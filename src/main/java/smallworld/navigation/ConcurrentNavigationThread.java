@@ -61,10 +61,12 @@ public class ConcurrentNavigationThread implements Callable<Path> {
 		try (Transaction tx = graphDb.beginTx()) {
 			path = nav.findSinglePath(source, sink);
 			
+			/*
 			if (this.updateBetweennessCentrality) {
 				updateBetweennessCentrality(path);
 				tx.success();
 			}
+			*/
 			
 			try {
 				if (path != null) {
